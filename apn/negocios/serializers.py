@@ -1,22 +1,27 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import serializers
-from apn.negocios.models import Negocio
+from apn.negocios.models import Negocio, Contato
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['url', 'username', 'email', 'groups']
+        fields = ['url', 'username']
 
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class ContatoSerializer(serializers.ModelSerializer):
+
     class Meta:
-        model = Group
-        fields = ['url', 'name']
+        model = Contato
+        fields = ['url', 'negocio', 'nome', 'telefone', 'instagram',
+                  'possui_whatsapp']
 
 
-class NegocioSerializer(serializers.HyperlinkedModelSerializer):
+class NegocioSerializer(serializers.ModelSerializer):
+    contatos = ContatoSerializer(many=True)
+
     class Meta:
         model = Negocio
-        fields = ['url', 'nome', 'formas_entrega', 'valor_minimo',
-                  'formas_pagamento', 'endereco', 'taxa_padrao_entrega']
+        fields = ['url', 'id', 'nome', 'formas_entrega', 'valor_minimo',
+                  'formas_pagamento', 'endereco', 'taxa_padrao_entrega',
+                  'contatos']

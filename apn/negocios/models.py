@@ -9,8 +9,9 @@ class InfoPerfilUsuario(models.Model):
 
 
 @receiver(post_save, sender=User)
-def my_handler(sender, instance, **kwargs):
-    InfoPerfilUsuario.objects.create(user=instance)
+def my_handler(sender, instance, created, **kwargs):
+    if created:
+        InfoPerfilUsuario.objects.create(user=instance)
 
 
 class Negocio(models.Model):
@@ -25,6 +26,9 @@ class Negocio(models.Model):
     taxa_padrao_entrega = models.PositiveSmallIntegerField(
         'Taxa padrão de entrega', default=0)
 
+    def __str__(self):
+        return self.nome
+
     @property
     def responsaveis(self):
         return NegocioUsuario.objects.filter(negocio=self) \
@@ -34,11 +38,20 @@ class Negocio(models.Model):
 class Contato(models.Model):
     nome = models.CharField('Nome', max_length=50)
     telefone = models.CharField('Telefone', max_length=12)
-    negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
+    negocio = models.ForeignKey(
+        'Negocio', on_delete=models.CASCADE, related_name='contatos')
     instagram = models.CharField(
         'Instagram', max_length=30, null=True, blank=True)
     possui_whatsapp = models.BooleanField(
         'Atendimento por Whatsapp?', default=False)
+
+    def __str__(self):
+        # if self.possui_whatsapp:
+        #     telefone = self.telefone.replace(r'\D', '')
+        #     return f'{self.nome}: https://wa.me/55{telefone}'
+        # else:
+        #     return f'{self.nome}: {self.telefone}'
+        return self.nome
 
 
 class NegocioUsuario(models.Model):
@@ -56,13 +69,22 @@ class Produto(models.Model):
     categoria = models.ForeignKey(
         'Categoria', on_delete=models.SET_NULL, blank=True, null=True)
 
+    def __str__(self):
+        return self.nome
+
 
 class Categoria(models.Model):
     nome = models.CharField('Nome', max_length=30)
 
+    def __str__(self):
+        return self.nome
+
 
 class RegiaoEntrega(models.Model):
     nome = models.CharField('Nome', max_length=30)
+
+    def __str__(self):
+        return self.nome
 
 
 class NegocioRegiaoEntrega(models.Model):
