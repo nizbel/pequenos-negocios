@@ -1,9 +1,16 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
-class Usuario(models.Model):
+class InfoPerfilUsuario(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+
+@receiver(post_save, sender=User)
+def my_handler(sender, instance, **kwargs):
+    InfoPerfilUsuario.objects.create(user=instance)
 
 
 class Negocio(models.Model):
@@ -18,6 +25,11 @@ class Negocio(models.Model):
     taxa_padrao_entrega = models.PositiveSmallIntegerField(
         'Taxa padrão de entrega', default=0)
 
+    @property
+    def responsaveis(self):
+        return NegocioUsuario.objects.filter(negocio=self) \
+            .values_list('usuario', flat=True)
+
 
 class Contato(models.Model):
     nome = models.CharField('Nome', max_length=50)
@@ -30,7 +42,7 @@ class Contato(models.Model):
 
 
 class NegocioUsuario(models.Model):
-    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
 
     class Meta:
