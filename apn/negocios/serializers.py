@@ -18,7 +18,7 @@ class ContatoSerializer(serializers.ModelSerializer):
 
 
 class NegocioSerializer(serializers.ModelSerializer):
-    contatos = ContatoSerializer(many=True)
+    contatos = ContatoSerializer(many=True, required=False)
 
     class Meta:
         model = Negocio
