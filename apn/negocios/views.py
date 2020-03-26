@@ -2,12 +2,18 @@ from apn.negocios.serializers import UserSerializer, \
     NegocioSerializer, ContatoSerializer
 from django.contrib.auth.models import User
 from django.db import transaction
+from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from apn import settings
 from apn.negocios.models import Negocio, NegocioUsuario, Contato
 from apn.negocios.permissions import ResponsavelOuReadOnly, ProprioUsuario, \
-    ResponsavelNegocioOuReadOnly, ReadOnly
+    ResponsavelNegocioOuReadOnly
+
+
+def home(request):
+    return render(request, 'index.html', {'PROD': (not settings.DEBUG)})
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -58,13 +64,24 @@ class ContatoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         negocio_id = self.kwargs.get('negocio_id')
-        print(negocio_id)
         if negocio_id:
             return self.queryset.filter(negocio__id=negocio_id)
         else:
             return self.queryset
 
     def create(self, request):
+        try:
+            with transaction.atomic():
+                result = super().create(request)
+                if request.user.id not in Negocio.objects.get(id=result.data['negocio']) \
+                        .responsaveis:
+                    raise ValueError(
+                        'Contato deve ser vinculado a um negócio do usuário')
+        except:
+            raise
+        return result
+
+    def create(self, request, negocio_id):
         try:
             with transaction.atomic():
                 result = super().create(request)
