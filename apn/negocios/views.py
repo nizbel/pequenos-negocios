@@ -2,7 +2,9 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from apn.negocios.models import Negocio
-from apn.negocios.serializers import UserSerializer, GroupSerializer, NegocioSerializer
+from apn.negocios.permissions import ResponsavelOuReadOnly
+from apn.negocios.serializers import UserSerializer, GroupSerializer, \
+    NegocioSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,3 +31,5 @@ class NegocioViewSet(viewsets.ModelViewSet):
     """
     queryset = Negocio.objects.all().order_by('nome')
     serializer_class = NegocioSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly, ResponsavelOuReadOnly]
