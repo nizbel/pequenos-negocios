@@ -2,24 +2,26 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
-from apn.negocios.models import Usuario
+from apn.negocios.models import InfoPerfilUsuario
 
-# Define an inline admin descriptor for Usuario model
+# Define an inline admin descriptor for InfoPerfilUsuario model
 # which acts a bit like a singleton
 
 
-class UsuarioInline(admin.StackedInline):
-    model = Usuario
+class InfoPerfilUsuarioInline(admin.StackedInline):
+    model = InfoPerfilUsuario
     can_delete = False
-    verbose_name_plural = 'Usuario'
+    verbose_name_plural = 'Outras informações'
 
 # Define a new User admin
 
 
 class UserAdmin(BaseUserAdmin):
-    inlines = (UsuarioInline,)
+    inlines = (InfoPerfilUsuarioInline,)
 
 
 # Re-register UserAdmin
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+
+admin.site.register(InfoPerfilUsuario)
