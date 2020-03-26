@@ -18,5 +18,5 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class NegocioSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Negocio
-        fields = ['nome', 'formas_entrega', 'valor_minimo',
+        fields = ['url', 'nome', 'formas_entrega', 'valor_minimo',
                   'formas_pagamento', 'endereco', 'taxa_padrao_entrega']
