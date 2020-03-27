@@ -38,35 +38,48 @@
 
         <v-content>
             <v-container class="fill-height" fluid>
-                <v-card>
-                    <v-list two-line>
-                        <v-list-item-group multiple active-class="pink--text">
-                            <template v-for="(negocio, index) in negocios">
-                                <v-list-item :key="negocio.id">
-                                    <template v-slot:default="{ active, toggle }">
-                                        <v-list-item-content>
-                                            <v-list-item-title v-text="negocio.nome"></v-list-item-title>
-                                            <v-list-item-subtitle class="text--primary" v-text="negocio.endereco">
-                                            </v-list-item-subtitle>
+                <v-row class="mx-0">
+                    <v-col cols="12">
+                        <v-sheet color="yellow" elevation="0" class="mx-auto" height="100" tile>
+                            <h2>Sobre</h2>
+                            <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
+                        </v-sheet>
+                    </v-col>
 
-                                            <template v-for="(contato, indexContato) in negocio.contatos">
-                                                <v-list-item-subtitle
-                                                    v-text="contato.nome + ' ' + contato.telefone + ' @' + contato.instagram">
-                                                </v-list-item-subtitle>
+                    <v-col cols="12">
+                        <v-card>
+                            <v-list two-line>
+                                <v-list-item-group multiple active-class="pink--text">
+                                    <template v-for="(negocio, index) in negocios">
+                                        <v-list-item :key="negocio.id">
+                                            <template v-slot:default="{ active, toggle }">
+                                                <v-list-item-content>
+                                                    <v-list-item-title v-text="negocio.nome"></v-list-item-title>
+                                                    <v-list-item-subtitle class="text--primary"
+                                                        v-text="negocio.endereco">
+                                                    </v-list-item-subtitle>
+
+                                                    <template v-for="(contato, indexContato) in negocio.contatos">
+                                                        <v-list-item-subtitle
+                                                            v-text="contato.nome + ' ' + contato.telefone + ' @' + contato.instagram">
+                                                        </v-list-item-subtitle>
+                                                    </template>
+                                                </v-list-item-content>
                                             </template>
-                                        </v-list-item-content>
+                                        </v-list-item>
+                                        <v-divider v-if="index + 1 < negocios.length" :key="index"></v-divider>
                                     </template>
-                                </v-list-item>
-
-                                <v-divider v-if="index + 1 < negocios.length" :key="index"></v-divider>
-                            </template>
-                        </v-list-item-group>
-                    </v-list>
-                </v-card>
+                                </v-list-item-group>
+                            </v-list>
+                        </v-card>
+                    </v-col>
+                </v-row>
             </v-container>
         </v-content>
-        <v-footer app color="indigo">
-            <span class="white--text">Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
+        <v-footer app color="indigo" absolute class="py-0">
+            <v-col class="text-center py-1" cols="12">
+                <span class="white--text">Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
+            </v-col>
         </v-footer>
     </v-app>
 
