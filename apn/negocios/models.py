@@ -36,7 +36,7 @@ class Negocio(models.Model):
 
 
 class Contato(models.Model):
-    nome = models.CharField('Nome', max_length=50)
+    nome = models.CharField('Nome', max_length=50, default='')
     telefone = models.CharField('Telefone', max_length=12)
     negocio = models.ForeignKey(
         'Negocio', on_delete=models.CASCADE, related_name='contatos')
