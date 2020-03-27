@@ -69,19 +69,7 @@ class ContatoViewSet(viewsets.ModelViewSet):
         else:
             return self.queryset
 
-    def create(self, request):
-        try:
-            with transaction.atomic():
-                result = super().create(request)
-                if request.user.id not in Negocio.objects.get(id=result.data['negocio']) \
-                        .responsaveis:
-                    raise ValueError(
-                        'Contato deve ser vinculado a um negócio do usuário')
-        except:
-            raise
-        return result
-
-    def create(self, request, negocio_id):
+    def create(self, request, negocio_id=None):
         try:
             with transaction.atomic():
                 result = super().create(request)
