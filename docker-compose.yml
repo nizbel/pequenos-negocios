@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    restart: on-failure
+  apache:
+    build:
+      context: .
+      dockerfile: Dockerfile-apache
+    image: nizbel/bagofgold:apn_apache
+    depends_on:
+      - db
+      - apn
+    ports:
+      - "80:80"
+    restart: on-failure
+  apn:
+    build:
+      context: .
+      dockerfile: Dockerfile-apn
+    container_name: apn
+    image: nizbel/bagofgold:apn_core
+    depends_on:
+      - db
+    restart: on-failure
+    mem_limit: 256M
+    cpu_shares: 256

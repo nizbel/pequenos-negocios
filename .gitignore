@@ -132,3 +132,4 @@ dmypy.json
 conf/
 apache_conf/
 fabfile.py
+static/

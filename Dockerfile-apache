@@ -1,0 +1,28 @@
+FROM python:3.6
+
+EXPOSE 80
+
+# Instalar apache
+RUN apt-get update
+RUN apt-get install -y apache2 apache2-utils apache2-dev libexpat1 ssl-cert && apt-get clean
+
+#RUN pip install mod_wsgi
+#RUN mod_wsgi-express module-config >> /etc/apache2/apache2.conf
+
+COPY apache_conf /home/apn/apache_conf
+
+WORKDIR /home/apn/apache_conf
+RUN . /home/apn/apache_conf/set-apache.sh
+
+# Remover pastas nao utilizadas
+RUN rm -rf /home/apn/apache_conf
+
+RUN service apache2 restart
+
+WORKDIR /home/apn
+
+# Arquivos estáticos
+COPY static /home/apn/static
+
+# Run app.py when the container launches
+CMD apachectl -D FOREGROUND
