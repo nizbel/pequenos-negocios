@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from apn.negocios.models import Negocio, Contato, Categoria, Produto, \
-    RegiaoEntrega
+    RegiaoEntrega, NegocioRegiaoEntrega
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -44,3 +44,9 @@ class RegiaoEntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegiaoEntrega
         fields = ['url', 'nome']
+
+
+class NegocioRegiaoEntregaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NegocioRegiaoEntrega
+        fields = ['url', 'negocio', 'regiao', 'taxa_entrega']
