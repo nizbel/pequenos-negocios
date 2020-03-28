@@ -49,7 +49,10 @@ class NegocioViewSet(viewsets.ModelViewSet):
 
     @action(detail=False)
     def meus(self, request, *args, **kwargs):
-        negocios = NegocioUsuario.objects.filter(usuario=request.user)
+        if not request.user.is_authenticated:
+            return Response([])
+        negocios = NegocioUsuario.objects.filter(usuario=request.user) \
+            .values_list('negocio', flat=True)
         negocios = self.queryset.filter(id__in=negocios)
         serializer = self.get_serializer(negocios, many=True)
         return Response(serializer.data)
