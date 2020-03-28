@@ -60,8 +60,14 @@ deep-purple lighten-1
 
         <v-content>
             <v-container fluid>
+                <v-overlay :value="loading.length > 0" style="z-index: 3000">
+                    <v-layout row justify-center align-center>
+                        <v-progress-circular indeterminate :size="128" :width="8" color="deep-purple lighten-1">
+                        </v-progress-circular>
+                    </v-layout>
+                </v-overlay>
                 <v-row class="mx-0">
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="6" v-if="estadoAtual === estadoLista">
                         <v-sheet color="lime lighten-2" tile>
                             <v-sheet color="lime lighten-2" class="pa-3" tile>
                                 <h2>Sobre</h2>
@@ -84,11 +90,11 @@ deep-purple lighten-1
                             </v-sheet>
                     </v-col>
 
-                    <v-col cols="12" class="hidden-md-and-up">
+                    <v-col cols="12" class="hidden-md-and-up" v-if="estadoAtual === estadoLista">
                         <v-divider></v-divider>
                     </v-col>
 
-                    <v-col cols="12" md="6">
+                    <v-col cols="12" md="6" v-if="estadoAtual === estadoLista">
                         <v-sheet color="lime lighten-2" tile>
                             <v-sheet color="lime lighten-2" class="pa-3" tile>
                                 <h2>Negócios</h2>
@@ -97,7 +103,7 @@ deep-purple lighten-1
                                         style="overflow-y: scroll;">
                                         <v-list-item-group multiple active-class="pink--text">
                                             <template v-for="(negocio, index) in negociosFiltrados">
-                                                <v-list-item :key="negocio.id">
+                                                <v-list-item @click="selecionarNegocio(negocio)">
                                                     <template v-slot:default="{ active, toggle }">
                                                         <v-list-item-content>
                                                             <v-list-item-title>
@@ -123,7 +129,6 @@ deep-purple lighten-1
                                                                                 style="text-decoration: none !important;">
                                                                                 <v-icon>mdi-whatsapp</v-icon>
                                                                             </a></span>
-
                                                                     </span>
                                                                 </v-list-item-subtitle>
                                                             </template>
@@ -136,6 +141,60 @@ deep-purple lighten-1
                                         </v-list-item-group>
                                     </v-list>
                                 </v-card>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-col>
+
+                    <v-col cols="12" v-if="estadoAtual === estadoDetalhe">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <a href="javascript:;" @click="voltarLista()" style="text-decoration: none !important;">
+                                    <v-icon large>mdi-arrow-left</v-icon>
+                                </a>
+                                <h2>[[ negocioSelecionado.nome ]]
+                                    <span v-if="negocioSelecionado.instagram.length > 0">
+                                        <a :href="negocioSelecionado.instagram"
+                                            style="text-decoration: none !important;">
+                                            <v-icon large>mdi-instagram</v-icon>
+                                        </a>
+                                    </span>
+                                </h2>
+                                <h4>[[negocioSelecionado.endereco]]</h4>
+
+                                <h4 class="mt-2">Contatos</h4>
+                                <v-col cols="12" class="pa-0"
+                                    v-for="(contato, indexContato) in negocioSelecionado.contatos">
+                                    <span>[[ contato.nome_telefone ]]
+                                        <a v-if="contato.whatsapp" :href="contato.whatsapp"
+                                            style="text-decoration: none !important;">
+                                            <v-icon>mdi-whatsapp</v-icon>
+                                        </a>
+                                    </span>
+                                </v-col>
+
+                                <h4 class="mt-2">Formas de pagamento</h4>
+                                <span>[[ negocioSelecionado.formas_pagamento ]]</span>
+
+                                <h4 class="mt-2">Formas de entrega</h4>
+                                <span>[[ formatarFormaEntrega(negocioSelecionado.formas_entrega) ]]</span>
+
+                                <h4 v-if="negocioSelecionado.valor_minimo > 0" class="mt-2">Valor mínimo do pedido</h4>
+                                <span>[[ formatarPreco(negocioSelecionado.valor_minimo) ]]</span>
+
+                                <h4 class="mt-2">Produtos</h4>
+                                <v-col cols="12" class="pa-0"
+                                    v-for="(produto, indexProduto) in negocioSelecionado.produtos">
+                                    <v-row>
+                                        <v-col cols="8" class="py-0">
+                                            <span>[[ produto.nome ]]</span>
+                                        </v-col>
+                                        <v-col cols="4" class="py-0 pl-0">
+                                            <span v-if="produto.preco > 0" class="float-right font-weight-bold">[[
+                                                formatarPreco(produto.preco)
+                                                ]]</span>
+                                        </v-col>
+                                    </v-row>
+                                </v-col>
                             </v-sheet>
                         </v-sheet>
                     </v-col>
@@ -158,7 +217,10 @@ deep-purple lighten-1
     <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-        new Vue({
+        const ESTADO_LISTA = 1;
+        const ESTADO_DETALHE = 2;
+
+        let app = new Vue({
             el: '#app',
             delimiters: ['[[', ']]'],
             vuetify: new Vuetify({
@@ -167,43 +229,97 @@ deep-purple lighten-1
                 },
             }),
 
-            data() {
-                return {
-                    negocios: null,
-                    drawer: false,
+            data: {
+                negocios: [],
+                negocioSelecionado: null,
+                drawer: false,
 
-                    estado: 1,
+                estadoAtual: ESTADO_LISTA,
+                estadoLista: ESTADO_LISTA,
+                estadoDetalhe: ESTADO_DETALHE,
 
-                    pesquisa: {
-                        nome: ''
-                    }
-                }
+                pesquisa: {
+                    nome: ''
+                },
+
+                loading: []
             },
 
             computed: {
-                negociosFiltrados() {
+                negociosFiltrados: function () {
                     var lista = [];
 
                     const nomePesquisa = this.pesquisa.nome.toLowerCase();
-                    if (this.negocios) {
-                        for (negocio of this.negocios) {
-                            if (negocio.nome.toLowerCase().indexOf(nomePesquisa) > -1) {
-                                lista.push(negocio);
-                            }
+
+                    for (negocio of this.negocios) {
+                        if (negocio.nome.toLowerCase().indexOf(nomePesquisa) > -1) {
+                            lista.push(negocio);
                         }
                     }
-                    return lista;
+
+                    function compare(a, b) {
+                        if (a.nome < b.nome)
+                            return -1;
+                        if (a.nome > b.nome)
+                            return 1;
+                        if (a.id < b.id)
+                            return -1;
+                        if (a.id > b.id)
+                            return 1;
+                        return 0;
+                    }
+
+                    return lista.sort(compare);
                 }
             },
 
             methods: {
+                formatarPreco(preco) {
+                    if (!preco) return 0;
+                    var centavos = String(preco % 100);
+                    if (centavos.length < 2) {
+                        centavos = "0".concat(centavos);
+                    }
+                    return `R$ ${Math.floor(preco / 100)},${centavos}`;
+                },
                 formatarTelefone(telefone) {
-                    if (!telefone) return null
+                    if (!telefone) return null;
 
                     const ddd = telefone.substring(0, 2);
                     const parte1 = telefone.substring(2, telefone.length - 4);
                     const parte2 = telefone.substring(telefone.length - 4);
                     return `(${ddd}) ${parte1}-${parte2}`
+                },
+                formatarFormaEntrega(formasEntrega) {
+                    if (!formasEntrega) return null;
+
+                    switch (formasEntrega) {
+                        case 1:
+                            return 'Delivery';
+                        case 2:
+                            return 'Take Out';
+                        case 3:
+                            return 'Delivery e Take Out';
+                        default:
+                            return null;
+                    }
+                },
+                selecionarNegocio(negocio) {
+                    this.negocioSelecionado = negocio;
+                    this.negocioSelecionado.produtos = [];
+                    this.estadoAtual = this.estadoDetalhe;
+
+                    this.loading.push(1);
+                    axios
+                        .get(`/api/negocios/${this.negocioSelecionado.id}/produtos/`)
+                        .then(response => {
+                            this.loading.pop();
+                            this.negocioSelecionado.produtos = response.data;
+                        });
+                },
+                voltarLista() {
+                    this.negocioSelecionado = null;
+                    this.estadoAtual = this.estadoLista;
                 }
             },
 
@@ -231,7 +347,7 @@ deep-purple lighten-1
                                 }
                             }
                         }
-                    })
+                    });
             }
         })
     </script>
