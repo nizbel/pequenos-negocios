@@ -1,6 +1,6 @@
 from apn.negocios.serializers import UserSerializer, \
     NegocioSerializer, ContatoSerializer, CategoriaSerializer, \
-    ProdutoSerializer, RegiaoEntregaSerializer
+    ProdutoSerializer, RegiaoEntregaSerializer, NegocioRegiaoEntregaSerializer
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import render
@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from apn import settings
 from apn.negocios.models import Negocio, NegocioUsuario, Contato, \
-    Categoria, Produto, RegiaoEntrega
+    Categoria, Produto, RegiaoEntrega, NegocioRegiaoEntrega
 from apn.negocios.permissions import ResponsavelOuReadOnly, ProprioUsuario, \
     ResponsavelNegocioOuReadOnly
 
@@ -166,5 +166,15 @@ class RegiaoEntregaViewSet(viewsets.ModelViewSet):
     """
     queryset = RegiaoEntrega.objects.all().order_by('nome')
     serializer_class = RegiaoEntregaSerializer
+    permission_classes = [
+        AdminOuReadOnly]
+
+
+class NegocioRegiaoEntregaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para RegiaoEntrega.
+    """
+    queryset = NegocioRegiaoEntrega.objects.all().order_by('nome')
+    serializer_class = NegocioRegiaoEntregaSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly]
