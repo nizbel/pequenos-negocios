@@ -30,23 +30,25 @@ class ProdutoSerializer(serializers.ModelSerializer):
         fields = ['url', 'nome', 'negocio', 'preco', 'categoria']
 
 
-class NegocioSerializer(serializers.ModelSerializer):
-    contatos = ContatoSerializer(many=True, required=False)
-
-    class Meta:
-        model = Negocio
-        fields = ['url', 'id', 'nome', 'formas_entrega', 'valor_minimo',
-                  'formas_pagamento', 'endereco', 'taxa_padrao_entrega',
-                  'instagram', 'contatos']
-
-
 class RegiaoEntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegiaoEntrega
-        fields = ['url', 'nome']
+        fields = ['url', 'id', 'nome']
 
 
 class NegocioRegiaoEntregaSerializer(serializers.ModelSerializer):
     class Meta:
         model = NegocioRegiaoEntrega
         fields = ['url', 'negocio', 'regiao', 'taxa_entrega']
+
+
+class NegocioSerializer(serializers.ModelSerializer):
+    contatos = ContatoSerializer(many=True, required=False)
+    regioes_entrega = NegocioRegiaoEntregaSerializer(
+        many=True, required=False)
+
+    class Meta:
+        model = Negocio
+        fields = ['url', 'id', 'nome', 'formas_entrega', 'valor_minimo',
+                  'formas_pagamento', 'endereco', 'taxa_padrao_entrega',
+                  'instagram', 'contatos', 'regioes_entrega']
