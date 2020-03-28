@@ -96,7 +96,8 @@ class RegiaoEntrega(models.Model):
 
 class NegocioRegiaoEntrega(models.Model):
     regiao = models.ForeignKey('RegiaoEntrega', on_delete=models.CASCADE)
-    negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
+    negocio = models.ForeignKey(
+        'Negocio', on_delete=models.CASCADE, related_name="regioes_entrega")
     taxa_entrega = models.PositiveSmallIntegerField(
         'Taxa de entrega', default=0)
 
