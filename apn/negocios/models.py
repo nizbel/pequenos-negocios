@@ -15,8 +15,13 @@ def my_handler(sender, instance, created, **kwargs):
 
 
 class Negocio(models.Model):
+    FORMAS_ENTREGA_CHOICES = [
+        (1, 'Delivery'), (2, 'Take Out'), (3, 'Delivery e Take Out')
+    ]
+
     nome = models.CharField('Nome', max_length=50)
-    formas_entrega = models.SmallIntegerField('Formas de entrega', default=0)
+    formas_entrega = models.SmallIntegerField('Formas de entrega', default=0,
+                                              choices=FORMAS_ENTREGA_CHOICES)
     valor_minimo = models.PositiveSmallIntegerField(
         'Valor mínimo para entrega', default=0)
     formas_pagamento = models.CharField(
@@ -92,7 +97,8 @@ class RegiaoEntrega(models.Model):
 class NegocioRegiaoEntrega(models.Model):
     regiao = models.ForeignKey('RegiaoEntrega', on_delete=models.CASCADE)
     negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
-    taxa_entrega = models.PositiveSmallIntegerField('Taxa de entrega')
+    taxa_entrega = models.PositiveSmallIntegerField(
+        'Taxa de entrega', default=0)
 
     class Meta:
         unique_together = ('regiao', 'negocio')
