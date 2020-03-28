@@ -47,10 +47,44 @@ class NegocioViewSet(viewsets.ModelViewSet):
             raise
         return result
 
+    def list(self, request):
+        result = super().list(request)
+
+        # Percorrer todos os ids para adicionar categorias
+        ids = []
+        for negocio_data in result.data:
+            ids.append(negocio_data['id'])
+
+        # Listar produtos para trazer pares (categoria, negócio)
+        categorias_negocios = Produto.objects.filter(
+            negocio__id__in=ids).values('categoria', 'negocio').order_by('negocio').distinct()
+
+        for negocio_data in result.data:
+            negocio_data['categorias'] = []
+            for categoria_negocio in categorias_negocios:
+                if negocio_data['id'] == categoria_negocio['negocio']:
+                    negocio_data['categorias'].append(
+                        {'id': categoria_negocio['categoria']})
+
+        return result
+
+    @action(detail=True)
+    def categorias(self, request, *args, **kwargs):
+        negocio_id = self.kwargs.get('pk')
+        if not negocio_id:
+            return Response([])
+
+        negocio = Negocio.objects.get(id=negocio_id)
+        categorias = Categoria.objects.filter(id__in=negocio.categorias)
+        serializer = CategoriaSerializer(
+            categorias, many=True, context={'request': request})
+        return Response(serializer.data)
+
     @action(detail=False)
     def meus(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response([])
+
         negocios = NegocioUsuario.objects.filter(usuario=request.user) \
             .values_list('negocio', flat=True)
         negocios = self.queryset.filter(id__in=negocios)
