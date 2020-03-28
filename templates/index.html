@@ -3,19 +3,29 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Merienda+One|Open+Sans&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        h2 {
+            font-family: 'Merienda One', cursive;
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 
 <body>
     <v-app id="app">
-        <v-app-bar app color="indigo" dark elevate-on-scroll>
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar app color="lime darken-2" dark elevate-on-scroll>
+            <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
             <v-toolbar-title>Ajude Pequenos Negócios</v-toolbar-title>
         </v-app-bar>
 
-        <v-navigation-drawer app v-model="drawer">
+        <!-- <v-navigation-drawer app v-model="drawer">
             <v-list dense>
                 <v-list-item link>
                     <v-list-item-action>
@@ -25,58 +35,84 @@
                         <v-list-item-title>Home</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
-                <v-list-item link>
-                    <v-list-item-action>
-                        <v-icon>mdi-contact-mail</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Contact</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
             </v-list>
-        </v-navigation-drawer>
+        </v-navigation-drawer> -->
 
         <v-content>
-            <v-container class="fill-height" fluid>
+            <v-container fluid>
                 <v-row class="mx-0">
-                    <v-col cols="12">
-                        <v-sheet color="yellow" elevation="0" class="mx-auto" height="100" tile>
-                            <h2>Sobre</h2>
-                            <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
-                        </v-sheet>
+                    <v-col cols="12" md="6">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <h2>Sobre</h2>
+                                <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
+                                <p class="mb-0">Dessa forma podemos encontrar padronizar as listas que tem circulado
+                                    pelas redes sociais.</p>
+                            </v-sheet>
+
+                            <v-col cols="12" class="hidden-sm-and-down">
+                                <v-divider></v-divider>
+                            </v-col>
+
+                            <v-sheet class="pa-3 hidden-sm-and-down" color="lime lighten-2" tile>
+                                <h2>Filtros</h2>
+                                <v-col cols="12" sm="6" md="3">
+                                    <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
+                                        outlined>
+                                    </v-text-field>
+                                </v-col>
+                            </v-sheet>
                     </v-col>
 
-                    <v-col cols="12">
-                        <v-card>
-                            <v-list two-line>
-                                <v-list-item-group multiple active-class="pink--text">
-                                    <template v-for="(negocio, index) in negocios">
-                                        <v-list-item :key="negocio.id">
-                                            <template v-slot:default="{ active, toggle }">
-                                                <v-list-item-content>
-                                                    <v-list-item-title v-text="negocio.nome"></v-list-item-title>
-                                                    <v-list-item-subtitle class="text--primary"
-                                                        v-text="negocio.endereco">
-                                                    </v-list-item-subtitle>
+                    <v-col cols="12" class="hidden-md-and-up">
+                        <v-divider></v-divider>
+                    </v-col>
 
-                                                    <template v-for="(contato, indexContato) in negocio.contatos">
-                                                        <v-list-item-subtitle
-                                                            v-text="contato.nome + ' ' + contato.telefone + ' @' + contato.instagram">
-                                                        </v-list-item-subtitle>
+                    <v-col cols="12" md="6">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <h2>Negócios</h2>
+                                <v-card>
+                                    <v-list two-line max-height="600" style="overflow-y: scroll;">
+                                        <v-list-item-group multiple active-class="pink--text">
+                                            <template v-for="(negocio, index) in negociosFiltrados">
+                                                <v-list-item :key="negocio.id">
+                                                    <template v-slot:default="{ active, toggle }">
+                                                        <v-list-item-content>
+                                                            <v-list-item-title v-text="negocio.nome">
+                                                            </v-list-item-title>
+                                                            <v-list-item-subtitle class="text--primary"
+                                                                v-text="negocio.endereco">
+                                                            </v-list-item-subtitle>
+
+                                                            <template
+                                                                v-for="(contato, indexContato) in negocio.contatos">
+                                                                <v-list-item-subtitle>
+                                                                    <span>
+                                                                        <span>[[contato.nome_telefone]]</span>
+                                                                        <span v-if="contato.instagram.length> 0">
+                                                                            <a :href="contato.instagram">
+                                                                                <v-icon>mdi-instagram</v-icon>
+                                                                            </a>
+                                                                        </span>
+                                                                    </span>
+                                                                </v-list-item-subtitle>
+                                                            </template>
+                                                        </v-list-item-content>
                                                     </template>
-                                                </v-list-item-content>
+                                                </v-list-item>
+                                                <v-divider v-if="index + 1 < negocios.length" :key="index"></v-divider>
                                             </template>
-                                        </v-list-item>
-                                        <v-divider v-if="index + 1 < negocios.length" :key="index"></v-divider>
-                                    </template>
-                                </v-list-item-group>
-                            </v-list>
-                        </v-card>
+                                        </v-list-item-group>
+                                    </v-list>
+                                </v-card>
+                            </v-sheet>
+                        </v-sheet>
                     </v-col>
                 </v-row>
             </v-container>
         </v-content>
-        <v-footer app color="indigo" absolute class="py-0">
+        <v-footer app color="lime darken-2" absolute class="py-0">
             <v-col class="text-center py-1" cols="12">
                 <span class="white--text">Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
             </v-col>
@@ -99,16 +135,64 @@
                     current: 'pt-br',
                 }
             }),
+
             data() {
                 return {
                     negocios: null,
                     drawer: false,
+
+                    estado: 1,
+
+                    pesquisa: {
+                        nome: ''
+                    }
                 }
             },
+
+            computed: {
+                negociosFiltrados() {
+                    var lista = [];
+
+                    if (this.negocios) {
+                        for (negocio of this.negocios) {
+                            if (negocio.nome.toLowerCase().indexOf(this.pesquisa.nome.toLowerCase()) > -1) {
+                                lista.push(negocio);
+                            }
+                        }
+                    }
+                    return lista;
+                }
+            },
+
+            methods: {
+                formatarTelefone(telefone) {
+                    if (!telefone) return null
+
+                    const ddd = telefone.substring(0, 2);
+                    const parte1 = telefone.substring(2, telefone.length - 4);
+                    const parte2 = telefone.substring(telefone.length - 4);
+                    return `(${ddd}) ${parte1}-${parte2}`
+                }
+            },
+
             mounted() {
                 axios
                     .get('/api/negocios/')
-                    .then(response => (this.negocios = response.data))
+                    .then(response => {
+                        this.negocios = response.data;
+                        for (negocio of this.negocios) {
+                            for (contato of negocio.contatos) {
+                                if (contato.nome.length > 0) {
+                                    contato.nome_telefone = contato.nome + ' ' + this.formatarTelefone(contato.telefone);
+                                } else {
+                                    contato.nome_telefone = this.formatarTelefone(contato.telefone);
+                                }
+                                if (contato.instagram.length > 0) {
+                                    contato.instagram = 'https://instagram.com/' + contato.instagram;
+                                }
+                            }
+                        }
+                    })
             }
         })
     </script>
