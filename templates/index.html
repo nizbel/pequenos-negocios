@@ -17,12 +17,26 @@
             margin-bottom: 5px;
         }
     </style>
+
+    {% if PROD %}
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-7792152-10"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'UA-7792152-10');
+    </script>
+    {% endif %}
 </head>
 
-<!-- lime lighten-2
+{% comment %}
+lime lighten-2
 lime lighten-5
 lime darken-3
-deep-purple lighten-1 -->
+deep-purple lighten-1
+{% endcomment %}
 
 <body>
     <v-app id="app" style="background-color: #F9FBE7;">
@@ -104,8 +118,8 @@ deep-purple lighten-1 -->
                                                                 <v-list-item-subtitle>
                                                                     <span>
                                                                         <span>[[ contato.nome_telefone ]]
-                                                                            <a :href="contato.whatsapp"
-                                                                                v-if="contato.whatsapp"
+                                                                            <a v-if="contato.whatsapp"
+                                                                                :href="contato.whatsapp"
                                                                                 style="text-decoration: none !important;">
                                                                                 <v-icon>mdi-whatsapp</v-icon>
                                                                             </a></span>
@@ -116,7 +130,8 @@ deep-purple lighten-1 -->
                                                         </v-list-item-content>
                                                     </template>
                                                 </v-list-item>
-                                                <v-divider v-if="index + 1 < negocios.length" :key="index"></v-divider>
+                                                <v-divider v-if="index + 1 < negociosFiltrados.length" :key="index">
+                                                </v-divider>
                                             </template>
                                         </v-list-item-group>
                                     </v-list>
@@ -129,7 +144,8 @@ deep-purple lighten-1 -->
         </v-content>
         <v-footer app color="lime darken-3" absolute class="py-0">
             <v-col class="text-center py-1" cols="12">
-                <span class="white--text">Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
+                <span class="white--text">Feito por <a class="deep-purple--text text--lighten-1"
+                        href="https://twitter.com/gui_niz" style="text-decoration: none !important;">@gui_niz</a></span>
             </v-col>
         </v-footer>
     </v-app>
@@ -168,9 +184,10 @@ deep-purple lighten-1 -->
                 negociosFiltrados() {
                     var lista = [];
 
+                    const nomePesquisa = this.pesquisa.nome.toLowerCase();
                     if (this.negocios) {
                         for (negocio of this.negocios) {
-                            if (negocio.nome.toLowerCase().indexOf(this.pesquisa.nome.toLowerCase()) > -1) {
+                            if (negocio.nome.toLowerCase().indexOf(nomePesquisa) > -1) {
                                 lista.push(negocio);
                             }
                         }
