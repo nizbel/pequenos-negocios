@@ -25,6 +25,8 @@ class Negocio(models.Model):
         'Endereço', max_length=120, null=True, blank=True)
     taxa_padrao_entrega = models.PositiveSmallIntegerField(
         'Taxa padrão de entrega', default=0)
+    instagram = models.CharField(
+        'Instagram', max_length=30, null=True, blank=True)
 
     def __str__(self):
         return self.nome
