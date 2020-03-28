@@ -191,8 +191,8 @@ deep-purple lighten-1
                                             ]]</span>
                                     </v-col>
 
-                                    <v-col cols="12" md="3" class="py-0">
-                                        <h4 v-if="negocioSelecionado.valor_minimo > 0" class="mt-2">
+                                    <v-col v-if="negocioSelecionado.valor_minimo > 0" cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">
                                             Valor mínimo do pedido
                                         </h4>
                                         <span>[[ formatarPreco(negocioSelecionado.valor_minimo)
