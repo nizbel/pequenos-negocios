@@ -13,7 +13,7 @@ class ContatoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contato
-        fields = ['url', 'negocio', 'nome', 'telefone', 'instagram',
+        fields = ['url', 'negocio', 'nome', 'telefone',
                   'possui_whatsapp']
 
 
@@ -24,4 +24,4 @@ class NegocioSerializer(serializers.ModelSerializer):
         model = Negocio
         fields = ['url', 'id', 'nome', 'formas_entrega', 'valor_minimo',
                   'formas_pagamento', 'endereco', 'taxa_padrao_entrega',
-                  'contatos']
+                  'instagram', 'contatos']
