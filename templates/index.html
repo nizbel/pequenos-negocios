@@ -151,50 +151,72 @@ deep-purple lighten-1
                                 <a href="javascript:;" @click="voltarLista()" style="text-decoration: none !important;">
                                     <v-icon large>mdi-arrow-left</v-icon>
                                 </a>
-                                <h2>[[ negocioSelecionado.nome ]]
-                                    <span v-if="negocioSelecionado.instagram.length > 0">
-                                        <a :href="negocioSelecionado.instagram"
-                                            style="text-decoration: none !important;">
-                                            <v-icon large>mdi-instagram</v-icon>
-                                        </a>
-                                    </span>
-                                </h2>
-                                <h4>[[negocioSelecionado.endereco]]</h4>
 
-                                <h4 class="mt-2">Contatos</h4>
-                                <v-col cols="12" class="pa-0"
-                                    v-for="(contato, indexContato) in negocioSelecionado.contatos">
-                                    <span>[[ contato.nome_telefone ]]
-                                        <a v-if="contato.whatsapp" :href="contato.whatsapp"
-                                            style="text-decoration: none !important;">
-                                            <v-icon>mdi-whatsapp</v-icon>
-                                        </a>
-                                    </span>
-                                </v-col>
+                                <v-row>
+                                    <v-col cols="12" class="py-0">
+                                        <h2>[[ negocioSelecionado.nome ]]
+                                            <span v-if="negocioSelecionado.instagram.length > 0">
+                                                <a :href="negocioSelecionado.instagram"
+                                                    style="text-decoration: none !important;">
+                                                    <v-icon large>mdi-instagram</v-icon>
+                                                </a>
+                                            </span>
+                                        </h2>
+                                    </v-col>
+                                    <v-col cols="12" class="py-0">
+                                        <h4>[[negocioSelecionado.endereco]]</h4>
+                                    </v-col>
 
-                                <h4 class="mt-2">Formas de pagamento</h4>
-                                <span>[[ negocioSelecionado.formas_pagamento ]]</span>
-
-                                <h4 class="mt-2">Formas de entrega</h4>
-                                <span>[[ formatarFormaEntrega(negocioSelecionado.formas_entrega) ]]</span>
-
-                                <h4 v-if="negocioSelecionado.valor_minimo > 0" class="mt-2">Valor mínimo do pedido</h4>
-                                <span>[[ formatarPreco(negocioSelecionado.valor_minimo) ]]</span>
-
-                                <h4 class="mt-2">Produtos</h4>
-                                <v-col cols="12" class="pa-0"
-                                    v-for="(produto, indexProduto) in negocioSelecionado.produtos">
-                                    <v-row>
-                                        <v-col cols="8" class="py-0">
-                                            <span>[[ produto.nome ]]</span>
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Contatos</h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(contato, indexContato) in negocioSelecionado.contatos">
+                                            <span>[[ contato.nome_telefone ]]
+                                                <a v-if="contato.whatsapp" :href="contato.whatsapp"
+                                                    style="text-decoration: none !important;">
+                                                    <v-icon>mdi-whatsapp</v-icon>
+                                                </a>
+                                            </span>
                                         </v-col>
-                                        <v-col cols="4" class="py-0 pl-0">
-                                            <span v-if="produto.preco > 0" class="float-right font-weight-bold">[[
-                                                formatarPreco(produto.preco)
-                                                ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Formas de pagamento</h4>
+                                        <span>[[ negocioSelecionado.formas_pagamento ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Formas de entrega</h4>
+                                        <span>[[ formatarFormaEntrega(negocioSelecionado.formas_entrega)
+                                            ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 v-if="negocioSelecionado.valor_minimo > 0" class="mt-2">
+                                            Valor mínimo do pedido
+                                        </h4>
+                                        <span>[[ formatarPreco(negocioSelecionado.valor_minimo)
+                                            ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="4" class="py-0">
+                                        <h4 class="mt-2">Produtos</h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(produto, indexProduto) in negocioSelecionado.produtos">
+                                            <v-row>
+                                                <v-col cols="8" class="py-0">
+                                                    <span>[[ produto.nome ]]</span>
+                                                </v-col>
+                                                <v-col cols="4" class="py-0 pl-0">
+                                                    <span v-if="produto.preco > 0"
+                                                        class="float-right font-weight-bold">[[
+                                                        formatarPreco(produto.preco)
+                                                        ]]</span>
+                                                </v-col>
+                                            </v-row>
                                         </v-col>
-                                    </v-row>
-                                </v-col>
+                                    </v-col>
+                                </v-row>
                             </v-sheet>
                         </v-sheet>
                     </v-col>
