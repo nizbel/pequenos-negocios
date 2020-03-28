@@ -36,6 +36,11 @@ class Negocio(models.Model):
         return NegocioUsuario.objects.filter(negocio=self) \
             .values_list('usuario', flat=True)
 
+    @property
+    def categorias(self):
+        return Produto.objects.filter(negocio=self) \
+            .values('categoria').distinct()
+
 
 class Contato(models.Model):
     nome = models.CharField('Nome', max_length=50, default='')
