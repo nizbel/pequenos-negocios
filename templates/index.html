@@ -86,7 +86,14 @@ deep-purple lighten-1 -->
                                                 <v-list-item :key="negocio.id">
                                                     <template v-slot:default="{ active, toggle }">
                                                         <v-list-item-content>
-                                                            <v-list-item-title v-text="negocio.nome">
+                                                            <v-list-item-title>
+                                                                <span>[[ negocio.nome ]]</span>
+                                                                <span v-if="negocio.instagram.length > 0">
+                                                                    <a :href="negocio.instagram"
+                                                                        style="text-decoration: none !important;">
+                                                                        <v-icon>mdi-instagram</v-icon>
+                                                                    </a>
+                                                                </span>
                                                             </v-list-item-title>
                                                             <v-list-item-subtitle class="text--primary"
                                                                 v-text="negocio.endereco">
@@ -96,13 +103,13 @@ deep-purple lighten-1 -->
                                                                 v-for="(contato, indexContato) in negocio.contatos">
                                                                 <v-list-item-subtitle>
                                                                     <span>
-                                                                        <span>[[contato.nome_telefone]]</span>
-                                                                        <span v-if="contato.instagram.length> 0">
-                                                                            <a :href="contato.instagram"
+                                                                        <span>[[ contato.nome_telefone ]]
+                                                                            <a :href="contato.whatsapp"
+                                                                                v-if="contato.whatsapp"
                                                                                 style="text-decoration: none !important;">
-                                                                                <v-icon>mdi-instagram</v-icon>
-                                                                            </a>
-                                                                        </span>
+                                                                                <v-icon>mdi-whatsapp</v-icon>
+                                                                            </a></span>
+
                                                                     </span>
                                                                 </v-list-item-subtitle>
                                                             </template>
@@ -189,14 +196,21 @@ deep-purple lighten-1 -->
                     .then(response => {
                         this.negocios = response.data;
                         for (negocio of this.negocios) {
+                            // Preparar link instagram
+                            if (negocio.instagram.length > 0) {
+                                negocio.instagram = 'https://instagram.com/' + negocio.instagram;
+                            }
+
                             for (contato of negocio.contatos) {
                                 if (contato.nome.length > 0) {
                                     contato.nome_telefone = contato.nome + ' ' + this.formatarTelefone(contato.telefone);
                                 } else {
                                     contato.nome_telefone = this.formatarTelefone(contato.telefone);
                                 }
-                                if (contato.instagram.length > 0) {
-                                    contato.instagram = 'https://instagram.com/' + contato.instagram;
+
+                                // Preparar link whatsapp
+                                if (contato.possui_whatsapp) {
+                                    contato.whatsapp = "https://wa.me/55" + contato.telefone;
                                 }
                             }
                         }
