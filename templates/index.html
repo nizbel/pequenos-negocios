@@ -92,6 +92,11 @@ deep-purple lighten-1
                                             outlined>
                                         </v-text-field>
                                     </v-col>
+                                    <v-col md="4">
+                                        <v-select v-model="pesquisa.regiaoEntrega" :items="regioesEntrega"
+                                            item-text="nome" item-value="id" label="Região de entrega" outlined>
+                                        </v-select>
+                                    </v-col>
                                 </v-row>
                             </v-sheet>
                     </v-col>
@@ -320,17 +325,19 @@ deep-purple lighten-1
                 drawer: false,
                 showFiltros: true,
 
-                categorias: [],
+                categorias: [{ id: 0, nome: 'Todas' },],
                 negocios: [],
                 negocioSelecionado: null,
+                regioesEntrega: [{ id: 0, nome: 'Todas' },],
 
                 estadoAtual: ESTADO_LISTA,
                 estadoLista: ESTADO_LISTA,
                 estadoDetalhe: ESTADO_DETALHE,
 
                 pesquisa: {
-                    categoria: null,
-                    nome: ''
+                    categoria: 0,
+                    nome: '',
+                    regiaoEntrega: 0,
                 },
 
                 loading: []
@@ -343,7 +350,8 @@ deep-purple lighten-1
                     const nomePesquisa = this.pesquisa.nome.toLowerCase();
 
                     for (negocio of this.negocios) {
-                        if (this.filtrarNegocioCategoria(negocio) && this.filtrarNegocioNome(negocio, nomePesquisa)) {
+                        if (this.filtrarNegocioCategoria(negocio) && this.filtrarNegocioNome(negocio, nomePesquisa)
+                            && this.filtrarNegocioRegiaoEntrega(negocio)) {
                             lista.push(negocio);
                         }
                     }
@@ -394,6 +402,17 @@ deep-purple lighten-1
                 },
                 filtrarNegocioNome(negocio, nomeLowerCase) {
                     return (negocio.nome.toLowerCase().indexOf(nomeLowerCase) > -1);
+                },
+                filtrarNegocioRegiaoEntrega(negocio) {
+                    if (this.pesquisa.regiaoEntrega) {
+                        for (regiao_entrega of negocio.regioes_entrega) {
+                            if (regiao_entrega.regiao === this.pesquisa.regiaoEntrega) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                    return true;
                 },
                 formatarPreco(preco) {
                     if (!preco) return 0;
@@ -473,7 +492,7 @@ deep-purple lighten-1
                 axios
                     .get('/api/categorias/')
                     .then(response => {
-                        this.categorias = response.data;
+                        this.categorias.push(...response.data);
                         for (categoria of this.categorias) {
 
                             switch (categoria.id) {
@@ -527,6 +546,11 @@ deep-purple lighten-1
                                     break;
                             }
                         }
+                    });
+                axios
+                    .get('/api/regioes-entrega/')
+                    .then(response => {
+                        this.regioesEntrega.push(...response.data);
                     });
             }
         })
