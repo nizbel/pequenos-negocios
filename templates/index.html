@@ -254,6 +254,26 @@ deep-purple lighten-1
                                             ]]</span>
                                     </v-col>
 
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Regiões de entrega</h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(regiaoEntrega, indexRegiaoEntrega) in negocioSelecionado.regioes_entrega">
+                                            <v-row>
+                                                <v-col cols="8" class="py-0">
+                                                    <span>
+                                                        [[ regiaoEntrega.nomeRegiao ]]
+                                                    </span>
+                                                </v-col>
+                                                <v-col cols="4" class="py-0 pl-0">
+                                                    <span v-if="regiaoEntrega.taxa_entrega > 0"
+                                                        class="float-right font-weight-bold">[[
+                                                        formatarPreco(regiaoEntrega.taxa_entrega)
+                                                        ]]</span>
+                                                </v-col>
+                                            </v-row>
+                                        </v-col>
+                                    </v-col>
+
                                     <v-col cols="12" md="4" class="py-0">
                                         <h4 class="mt-2">Produtos</h4>
                                         <v-col cols="12" class="pa-0"
@@ -464,6 +484,16 @@ deep-purple lighten-1
                             this.loading.pop();
                             this.negocioSelecionado.produtos = response.data;
                         });
+
+                    // Definir nomes para regiões de entrega
+                    for (regiao_entrega of this.negocioSelecionado.regioes_entrega) {
+                        for (regiao of this.regioesEntrega) {
+                            if (regiao_entrega.regiao === regiao.id) {
+                                regiao_entrega.nomeRegiao = regiao.nome;
+                                break;
+                            }
+                        }
+                    }
                 },
                 voltarLista() {
                     this.negocioSelecionado = null;
