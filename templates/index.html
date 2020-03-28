@@ -11,18 +11,24 @@
             font-family: 'Open Sans', sans-serif;
         }
 
-        h2 {
+        h2,
+        .v-toolbar__title {
             font-family: 'Merienda One', cursive;
             margin-bottom: 5px;
         }
     </style>
 </head>
 
+<!-- lime lighten-2
+lime lighten-5
+lime darken-3
+deep-purple lighten-1 -->
+
 <body>
-    <v-app id="app">
-        <v-app-bar app color="lime darken-2" dark elevate-on-scroll>
+    <v-app id="app" style="background-color: #F9FBE7;">
+        <v-app-bar app color="lime darken-3" dark elevate-on-scroll>
             <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
-            <v-toolbar-title>Ajude Pequenos Negócios</v-toolbar-title>
+            <v-toolbar-title>Apoie Produtores Locais</v-toolbar-title>
         </v-app-bar>
 
         <!-- <v-navigation-drawer app v-model="drawer">
@@ -56,7 +62,7 @@
 
                             <v-sheet class="pa-3 hidden-sm-and-down" color="lime lighten-2" tile>
                                 <h2>Filtros</h2>
-                                <v-col cols="12" sm="6" md="3">
+                                <v-col md="4">
                                     <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
                                         outlined>
                                     </v-text-field>
@@ -73,7 +79,8 @@
                             <v-sheet color="lime lighten-2" class="pa-3" tile>
                                 <h2>Negócios</h2>
                                 <v-card>
-                                    <v-list two-line max-height="600" style="overflow-y: scroll;">
+                                    <v-list class="py-0" color="lime lighten-5" two-line max-height="600"
+                                        style="overflow-y: scroll;">
                                         <v-list-item-group multiple active-class="pink--text">
                                             <template v-for="(negocio, index) in negociosFiltrados">
                                                 <v-list-item :key="negocio.id">
@@ -91,7 +98,8 @@
                                                                     <span>
                                                                         <span>[[contato.nome_telefone]]</span>
                                                                         <span v-if="contato.instagram.length> 0">
-                                                                            <a :href="contato.instagram">
+                                                                            <a :href="contato.instagram"
+                                                                                style="text-decoration: none !important;">
                                                                                 <v-icon>mdi-instagram</v-icon>
                                                                             </a>
                                                                         </span>
@@ -112,7 +120,7 @@
                 </v-row>
             </v-container>
         </v-content>
-        <v-footer app color="lime darken-2" absolute class="py-0">
+        <v-footer app color="lime darken-3" absolute class="py-0">
             <v-col class="text-center py-1" cols="12">
                 <span class="white--text">Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
             </v-col>
@@ -133,7 +141,7 @@
             vuetify: new Vuetify({
                 lang: {
                     current: 'pt-br',
-                }
+                },
             }),
 
             data() {
