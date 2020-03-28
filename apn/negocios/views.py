@@ -1,5 +1,6 @@
 from apn.negocios.serializers import UserSerializer, \
-    NegocioSerializer, ContatoSerializer
+    NegocioSerializer, ContatoSerializer, CategoriaSerializer, \
+    ProdutoSerializer, RegiaoEntregaSerializer
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import render
@@ -7,7 +8,8 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from apn import settings
-from apn.negocios.models import Negocio, NegocioUsuario, Contato
+from apn.negocios.models import Negocio, NegocioUsuario, Contato, \
+    Categoria, Produto, RegiaoEntrega
 from apn.negocios.permissions import ResponsavelOuReadOnly, ProprioUsuario, \
     ResponsavelNegocioOuReadOnly
 
@@ -80,3 +82,52 @@ class ContatoViewSet(viewsets.ModelViewSet):
         except:
             raise
         return result
+
+
+class CategoriaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para Categoria.
+    """
+    queryset = Categoria.objects.all().order_by('nome')
+    serializer_class = CategoriaSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly]
+
+
+class ProdutoViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para Produto.
+    """
+    queryset = Produto.objects.all().order_by('nome')
+    serializer_class = ProdutoSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly, ResponsavelNegocioOuReadOnly]
+
+    def get_queryset(self):
+        negocio_id = self.kwargs.get('negocio_id')
+        if negocio_id:
+            return self.queryset.filter(negocio__id=negocio_id)
+        else:
+            return self.queryset
+
+    def create(self, request, negocio_id=None):
+        try:
+            with transaction.atomic():
+                result = super().create(request)
+                if request.user.id not in Negocio.objects.get(id=result.data['negocio']) \
+                        .responsaveis:
+                    raise ValueError(
+                        'Produto deve ser vinculado a um negócio do usuário')
+        except:
+            raise
+        return result
+
+
+class RegiaoEntregaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para RegiaoEntrega.
+    """
+    queryset = RegiaoEntrega.objects.all().order_by('nome')
+    serializer_class = RegiaoEntregaSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly]
