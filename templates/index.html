@@ -102,7 +102,24 @@ deep-purple lighten-1
 
                     <v-col cols="12" class="hidden-md-and-up" md="6" v-if="estadoAtual === estadoLista">
                         <v-sheet color="lime lighten-2" tile>
-                            <v-sheet color="lime lighten-2" class="pa-3" tile></v-sheet>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <v-btn class="mr-5" icon @click="showFiltros = !showFiltros" right absolute>
+                                    <v-icon large>[[ showFiltros ? 'mdi-chevron-up' : 'mdi-chevron-down' ]]
+                                    </v-icon>
+                                </v-btn>
+                                <h2>Filtros</h2>
+                                <v-row v-if="showFiltros">
+                                    <v-col cols="12">
+                                        <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
+                                            item-value="id" label="Categoria" outlined></v-select>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
+                                            outlined>
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
+                            </v-sheet>
                         </v-sheet>
                     </v-col>
 
@@ -288,6 +305,7 @@ deep-purple lighten-1
         const CATEGORIA_MASSAS = 13;
         const CATEGORIA_COMIDA_ASIATICA = 14;
         const CATEGORIA_COMIDA_MEXICANA = 15;
+        const CATEGORIA_OVOS = 16;
 
         new Vue({
             el: '#app',
@@ -299,10 +317,12 @@ deep-purple lighten-1
             }),
 
             data: {
+                drawer: false,
+                showFiltros: true,
+
                 categorias: [],
                 negocios: [],
                 negocioSelecionado: null,
-                drawer: false,
 
                 estadoAtual: ESTADO_LISTA,
                 estadoLista: ESTADO_LISTA,
@@ -501,6 +521,9 @@ deep-purple lighten-1
                                     break;
                                 case CATEGORIA_COMIDA_MEXICANA:
                                     categoria.icone = 'mdi-fire';
+                                    break;
+                                case CATEGORIA_OVOS:
+                                    categoria.icone = 'mdi-egg-outline';
                                     break;
                             }
                         }
