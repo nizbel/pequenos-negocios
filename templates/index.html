@@ -16,6 +16,12 @@
             font-family: 'Merienda One', cursive;
             margin-bottom: 5px;
         }
+
+        a,
+        a>* {
+            color: #7E57C2 !important;
+            text-decoration: none !important;
+        }
     </style>
 
     {% if PROD %}
@@ -108,7 +114,8 @@ deep-purple lighten-1
                     <v-col cols="12" class="hidden-md-and-up" md="6" v-if="estadoAtual === estadoLista">
                         <v-sheet color="lime lighten-2" tile>
                             <v-sheet color="lime lighten-2" class="pa-3" tile>
-                                <v-btn class="mr-5" icon @click="showFiltros = !showFiltros" right absolute>
+                                <v-btn class="mr-5" icon @click="showFiltros = !showFiltros" right absolute
+                                    color="deep-purple lighten-1">
                                     <v-icon large>[[ showFiltros ? 'mdi-chevron-up' : 'mdi-chevron-down' ]]
                                     </v-icon>
                                 </v-btn>
@@ -122,6 +129,11 @@ deep-purple lighten-1
                                         <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
                                             outlined>
                                         </v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-select v-model="pesquisa.regiaoEntrega" :items="regioesEntrega"
+                                            item-text="nome" item-value="id" label="Região de entrega" outlined>
+                                        </v-select>
                                     </v-col>
                                 </v-row>
                             </v-sheet>
@@ -147,8 +159,7 @@ deep-purple lighten-1
                                                             <v-list-item-title>
                                                                 <span>[[ negocio.nome ]]</span>
                                                                 <span v-if="negocio.instagram.length > 0">
-                                                                    <a v-on:click.stop :href="negocio.instagram"
-                                                                        style="text-decoration: none !important;">
+                                                                    <a v-on:click.stop :href="negocio.instagram">
                                                                         <v-icon>mdi-instagram</v-icon>
                                                                     </a>
                                                                 </span>
@@ -176,8 +187,7 @@ deep-purple lighten-1
                                                                     <span>
                                                                         <span>[[ contato.nome_telefone ]]
                                                                             <a v-on:click.stop v-if="contato.whatsapp"
-                                                                                :href="contato.whatsapp"
-                                                                                style="text-decoration: none !important;">
+                                                                                :href="contato.whatsapp">
                                                                                 <v-icon>mdi-whatsapp</v-icon>
                                                                             </a></span>
                                                                     </span>
@@ -203,8 +213,7 @@ deep-purple lighten-1
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ negocioSelecionado.nome ]]
                                             <span v-if="negocioSelecionado.instagram.length > 0">
-                                                <a :href="negocioSelecionado.instagram"
-                                                    style="text-decoration: none !important;">
+                                                <a :href="negocioSelecionado.instagram">
                                                     <v-icon large>mdi-instagram</v-icon>
                                                 </a>
                                             </span>
@@ -219,8 +228,7 @@ deep-purple lighten-1
                                         <v-col cols="12" class="pa-0"
                                             v-for="(contato, indexContato) in negocioSelecionado.contatos">
                                             <span>[[ contato.nome_telefone ]]
-                                                <a v-if="contato.whatsapp" :href="contato.whatsapp"
-                                                    style="text-decoration: none !important;">
+                                                <a v-if="contato.whatsapp" :href="contato.whatsapp">
                                                     <v-icon>mdi-whatsapp</v-icon>
                                                 </a>
                                             </span>
@@ -276,10 +284,9 @@ deep-purple lighten-1
                 </v-row>
             </v-container>
         </v-content>
-        <v-footer app color="lime darken-3" absolute class="py-0">
+        <v-footer app color="lime lighten-2" absolute class="py-0">
             <v-col class="text-center py-1" cols="12">
-                <span class="white--text">Feito por <a class="deep-purple--text text--lighten-1"
-                        href="https://twitter.com/gui_niz" style="text-decoration: none !important;">@gui_niz</a></span>
+                <span>Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
             </v-col>
         </v-footer>
     </v-app>
