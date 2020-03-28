@@ -53,11 +53,6 @@ class Contato(models.Model):
         'Atendimento por Whatsapp?', default=False)
 
     def __str__(self):
-        # if self.possui_whatsapp:
-        #     telefone = self.telefone.replace(r'\D', '')
-        #     return f'{self.nome}: https://wa.me/55{telefone}'
-        # else:
-        #     return f'{self.nome}: {self.telefone}'
         return self.nome
 
 
