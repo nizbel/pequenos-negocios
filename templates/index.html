@@ -82,12 +82,28 @@ deep-purple lighten-1
 
                             <v-sheet class="pa-3 hidden-sm-and-down" color="lime lighten-2" tile>
                                 <h2>Filtros</h2>
-                                <v-col md="4">
-                                    <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
-                                        outlined>
-                                    </v-text-field>
-                                </v-col>
+                                <v-row>
+                                    <v-col md="4">
+                                        <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
+                                            item-value="id" label="Categoria" outlined></v-select>
+                                    </v-col>
+                                    <v-col md="4">
+                                        <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
+                                            outlined>
+                                        </v-text-field>
+                                    </v-col>
+                                </v-row>
                             </v-sheet>
+                    </v-col>
+
+                    <v-col cols="12" class="hidden-md-and-up" v-if="estadoAtual === estadoLista">
+                        <v-divider></v-divider>
+                    </v-col>
+
+                    <v-col cols="12" class="hidden-md-and-up" md="6" v-if="estadoAtual === estadoLista">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile></v-sheet>
+                        </v-sheet>
                     </v-col>
 
                     <v-col cols="12" class="hidden-md-and-up" v-if="estadoAtual === estadoLista">
@@ -101,7 +117,7 @@ deep-purple lighten-1
                                 <v-card>
                                     <v-list class="py-0" color="lime lighten-5" two-line max-height="600"
                                         style="overflow-y: scroll;">
-                                        <v-list-item-group multiple active-class="pink--text">
+                                        <v-list-item-group multiple active-class="deep-purple--text text--lighten-1">
                                             <template v-for="(negocio, index) in negociosFiltrados">
                                                 <v-list-item @click="selecionarNegocio(negocio)">
                                                     <template v-slot:default="{ active, toggle }">
@@ -109,12 +125,25 @@ deep-purple lighten-1
                                                             <v-list-item-title>
                                                                 <span>[[ negocio.nome ]]</span>
                                                                 <span v-if="negocio.instagram.length > 0">
-                                                                    <a :href="negocio.instagram"
+                                                                    <a v-on:click.stop :href="negocio.instagram"
                                                                         style="text-decoration: none !important;">
                                                                         <v-icon>mdi-instagram</v-icon>
                                                                     </a>
                                                                 </span>
                                                             </v-list-item-title>
+
+                                                            <v-list-item-subtitle v-if="negocio.categorias">
+                                                                <v-tooltip bottom
+                                                                    v-for="(categoria, index) in negocio.categorias">
+                                                                    <template v-slot:activator="{ on }">
+                                                                        <v-icon v-on:click.stop v-on="on">
+                                                                            [[ buscarCategoriaIcone(categoria.id) ]]
+                                                                        </v-icon>
+                                                                    </template>
+                                                                    <span>[[ buscarCategoriaNome(categoria.id)
+                                                                        ]]</span>
+                                                                </v-tooltip>
+                                                            </v-list-item-subtitle>
                                                             <v-list-item-subtitle class="text--primary"
                                                                 v-text="negocio.endereco">
                                                             </v-list-item-subtitle>
@@ -124,7 +153,7 @@ deep-purple lighten-1
                                                                 <v-list-item-subtitle>
                                                                     <span>
                                                                         <span>[[ contato.nome_telefone ]]
-                                                                            <a v-if="contato.whatsapp"
+                                                                            <a v-on:click.stop v-if="contato.whatsapp"
                                                                                 :href="contato.whatsapp"
                                                                                 style="text-decoration: none !important;">
                                                                                 <v-icon>mdi-whatsapp</v-icon>
@@ -148,10 +177,6 @@ deep-purple lighten-1
                     <v-col cols="12" v-if="estadoAtual === estadoDetalhe">
                         <v-sheet color="lime lighten-2" tile>
                             <v-sheet color="lime lighten-2" class="pa-3" tile>
-                                <a href="javascript:;" @click="voltarLista()" style="text-decoration: none !important;">
-                                    <v-icon large>mdi-arrow-left</v-icon>
-                                </a>
-
                                 <v-row>
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ negocioSelecionado.nome ]]
@@ -205,7 +230,10 @@ deep-purple lighten-1
                                             v-for="(produto, indexProduto) in negocioSelecionado.produtos">
                                             <v-row>
                                                 <v-col cols="8" class="py-0">
-                                                    <span>[[ produto.nome ]]</span>
+                                                    <span>
+                                                        <v-icon>[[ buscarCategoriaIcone(produto.categoria) ]]</v-icon>
+                                                        [[ produto.nome ]]
+                                                    </span>
                                                 </v-col>
                                                 <v-col cols="4" class="py-0 pl-0">
                                                     <span v-if="produto.preco > 0"
@@ -219,6 +247,9 @@ deep-purple lighten-1
                                 </v-row>
                             </v-sheet>
                         </v-sheet>
+                        <v-btn fab color="deep-purple lighten-1" bottom right fixed @click="voltarLista()">
+                            <v-icon color="white">mdi-arrow-left</v-icon>
+                        </v-btn>
                     </v-col>
                 </v-row>
             </v-container>
@@ -242,7 +273,23 @@ deep-purple lighten-1
         const ESTADO_LISTA = 1;
         const ESTADO_DETALHE = 2;
 
-        let app = new Vue({
+        const CATEGORIA_CONGELADOS = 1;
+        const CATEGORIA_SALGADOS = 2;
+        const CATEGORIA_DOCES = 3;
+        const CATEGORIA_PAES = 4;
+        const CATEGORIA_BEBIDAS = 5;
+        const CATEGORIA_CASTANHAS = 6;
+        const CATEGORIA_CAFES = 7;
+        const CATEGORIA_COGUMELOS = 8;
+        const CATEGORIA_HORTIFRUTI = 9;
+        const CATEGORIA_CARNES = 10;
+        const CATEGORIA_PEIXES = 11;
+        const CATEGORIA_LATICINIOS = 12;
+        const CATEGORIA_MASSAS = 13;
+        const CATEGORIA_COMIDA_ASIATICA = 14;
+        const CATEGORIA_COMIDA_MEXICANA = 15;
+
+        new Vue({
             el: '#app',
             delimiters: ['[[', ']]'],
             vuetify: new Vuetify({
@@ -252,6 +299,7 @@ deep-purple lighten-1
             }),
 
             data: {
+                categorias: [],
                 negocios: [],
                 negocioSelecionado: null,
                 drawer: false,
@@ -261,6 +309,7 @@ deep-purple lighten-1
                 estadoDetalhe: ESTADO_DETALHE,
 
                 pesquisa: {
+                    categoria: null,
                     nome: ''
                 },
 
@@ -274,7 +323,7 @@ deep-purple lighten-1
                     const nomePesquisa = this.pesquisa.nome.toLowerCase();
 
                     for (negocio of this.negocios) {
-                        if (negocio.nome.toLowerCase().indexOf(nomePesquisa) > -1) {
+                        if (this.filtrarNegocioCategoria(negocio) && this.filtrarNegocioNome(negocio, nomePesquisa)) {
                             lista.push(negocio);
                         }
                     }
@@ -284,10 +333,6 @@ deep-purple lighten-1
                             return -1;
                         if (a.nome > b.nome)
                             return 1;
-                        if (a.id < b.id)
-                            return -1;
-                        if (a.id > b.id)
-                            return 1;
                         return 0;
                     }
 
@@ -296,8 +341,43 @@ deep-purple lighten-1
             },
 
             methods: {
+                buscarCategoriaIcone(categoria_id) {
+                    if (!categoria_id) return '';
+
+                    for (categoria of this.categorias) {
+                        if (categoria.id === categoria_id) {
+                            return categoria.icone;
+                        }
+                    }
+                    return '';
+                },
+                buscarCategoriaNome(categoria_id) {
+                    if (!categoria_id) return '';
+
+                    for (categoria of this.categorias) {
+                        if (categoria.id === categoria_id) {
+                            return categoria.nome;
+                        }
+                    }
+                    return '';
+                },
+                filtrarNegocioCategoria(negocio) {
+                    if (this.pesquisa.categoria) {
+                        for (categoria of negocio.categorias) {
+                            if (categoria.id === this.pesquisa.categoria) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                    return true;
+                },
+                filtrarNegocioNome(negocio, nomeLowerCase) {
+                    return (negocio.nome.toLowerCase().indexOf(nomeLowerCase) > -1);
+                },
                 formatarPreco(preco) {
                     if (!preco) return 0;
+
                     var centavos = String(preco % 100);
                     if (centavos.length < 2) {
                         centavos = "0".concat(centavos);
@@ -367,6 +447,61 @@ deep-purple lighten-1
                                 if (contato.possui_whatsapp) {
                                     contato.whatsapp = "https://wa.me/55" + contato.telefone;
                                 }
+                            }
+                        }
+                    });
+                axios
+                    .get('/api/categorias/')
+                    .then(response => {
+                        this.categorias = response.data;
+                        for (categoria of this.categorias) {
+
+                            switch (categoria.id) {
+                                case CATEGORIA_CONGELADOS:
+                                    categoria.icone = 'mdi-snowflake';
+                                    break;
+                                case CATEGORIA_SALGADOS:
+                                    categoria.icone = 'mdi-food-fork-drink';
+                                    break;
+                                case CATEGORIA_DOCES:
+                                    categoria.icone = 'mdi-cupcake';
+                                    break;
+                                case CATEGORIA_PAES:
+                                    categoria.icone = 'mdi-storefront-outline';
+                                    break;
+                                case CATEGORIA_BEBIDAS:
+                                    categoria.icone = 'mdi-cup-water';
+                                    break;
+                                case CATEGORIA_CASTANHAS:
+                                    categoria.icone = 'mdi-peanut-outline';
+                                    break;
+                                case CATEGORIA_CAFES:
+                                    categoria.icone = 'mdi-coffee';
+                                    break;
+                                case CATEGORIA_COGUMELOS:
+                                    categoria.icone = 'mdi-mushroom';
+                                    break;
+                                case CATEGORIA_HORTIFRUTI:
+                                    categoria.icone = 'mdi-flower';
+                                    break;
+                                case CATEGORIA_CARNES:
+                                    categoria.icone = 'mdi-silverware-fork-knife';
+                                    break;
+                                case CATEGORIA_PEIXES:
+                                    categoria.icone = 'mdi-fish';
+                                    break;
+                                case CATEGORIA_LATICINIOS:
+                                    categoria.icone = 'mdi-cow';
+                                    break;
+                                case CATEGORIA_MASSAS:
+                                    categoria.icone = 'mdi-pasta';
+                                    break;
+                                case CATEGORIA_COMIDA_ASIATICA:
+                                    categoria.icone = 'mdi-noodles';
+                                    break;
+                                case CATEGORIA_COMIDA_MEXICANA:
+                                    categoria.icone = 'mdi-fire';
+                                    break;
                             }
                         }
                     });
