@@ -11,7 +11,7 @@ from apn import settings
 from apn.negocios.models import Negocio, NegocioUsuario, Contato, \
     Categoria, Produto, RegiaoEntrega, NegocioRegiaoEntrega
 from apn.negocios.permissions import ResponsavelOuReadOnly, ProprioUsuario, \
-    ResponsavelNegocioOuReadOnly
+    ResponsavelNegocioOuReadOnly, AdminOuReadOnly
 
 
 def home(request):
@@ -172,9 +172,10 @@ class RegiaoEntregaViewSet(viewsets.ModelViewSet):
 
 class NegocioRegiaoEntregaViewSet(viewsets.ModelViewSet):
     """
-    API endpoint para RegiaoEntrega.
+    API endpoint para NegocioRegiaoEntrega.
     """
-    queryset = NegocioRegiaoEntrega.objects.all().order_by('nome')
+    queryset = NegocioRegiaoEntrega.objects.all().order_by(
+        'negocio__nome', 'regiao__nome')
     serializer_class = NegocioRegiaoEntregaSerializer
     permission_classes = [
-        permissions.IsAuthenticatedOrReadOnly]
+        permissions.IsAuthenticatedOrReadOnly, ResponsavelNegocioOuReadOnly]
