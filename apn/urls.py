@@ -27,6 +27,7 @@ router.register(r'negocios/(?P<negocio_id>\d+)/contatos',
                 views.ContatoViewSet)
 router.register(r'negocios/(?P<negocio_id>\d+)/produtos',
                 views.ProdutoViewSet)
+router.register(r'negocios/regioes-entrega', views.NegocioRegiaoEntregaViewSet)
 router.register(r'produtos', views.ProdutoViewSet)
 router.register(r'regioes-entrega', views.RegiaoEntregaViewSet)
 router.register(r'users', views.UserViewSet)
