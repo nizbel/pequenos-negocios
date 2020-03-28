@@ -20,13 +20,16 @@ from rest_framework import routers
 from apn.negocios import views
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'negocios', views.NegocioViewSet)
+router.register(r'categorias', views.CategoriaViewSet)
 router.register(r'contatos', views.ContatoViewSet)
-# router.register(r'negocios/<int:negocio_id>/contatos',
-#                 views.ContatoNegocioViewSet)
+router.register(r'negocios', views.NegocioViewSet)
 router.register(r'negocios/(?P<negocio_id>\d+)/contatos',
                 views.ContatoViewSet)
+router.register(r'negocios/(?P<negocio_id>\d+)/produtos',
+                views.ProdutoViewSet)
+router.register(r'produtos', views.ProdutoViewSet)
+router.register(r'regioes-entrega', views.RegiaoEntregaViewSet)
+router.register(r'users', views.UserViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
