@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from apn.negocios.models import Negocio, Contato, Categoria, Produto, RegiaoEntrega
+from apn.negocios.models import Negocio, Contato, Categoria, Produto, \
+    RegiaoEntrega
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,6 +18,18 @@ class ContatoSerializer(serializers.ModelSerializer):
                   'possui_whatsapp']
 
 
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = ['url', 'id', 'nome']
+
+
+class ProdutoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Produto
+        fields = ['url', 'nome', 'negocio', 'preco', 'categoria']
+
+
 class NegocioSerializer(serializers.ModelSerializer):
     contatos = ContatoSerializer(many=True, required=False)
 
@@ -25,18 +38,6 @@ class NegocioSerializer(serializers.ModelSerializer):
         fields = ['url', 'id', 'nome', 'formas_entrega', 'valor_minimo',
                   'formas_pagamento', 'endereco', 'taxa_padrao_entrega',
                   'instagram', 'contatos']
-
-
-class CategoriaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Categoria
-        fields = ['url', 'nome']
-
-
-class ProdutoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Produto
-        fields = ['url', 'nome', 'negocio', 'preco', 'categoria']
 
 
 class RegiaoEntregaSerializer(serializers.ModelSerializer):
