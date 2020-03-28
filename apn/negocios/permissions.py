@@ -6,8 +6,17 @@ class ReadOnly(permissions.BasePermission):
     Permissão para apenas leitura
     """
 
-    def has_object_permission(self, request, view, obj):
+    def has_permission(self, request, view):
         return request.method in permissions.SAFE_METHODS
+
+
+class AdminOuReadOnly(permissions.BasePermission):
+    """
+    Apenas admins podem alterar
+    """
+
+    def has_permission(self, request, view):
+        return request.user.is_superuser
 
 
 class ResponsavelOuReadOnly(permissions.BasePermission):
