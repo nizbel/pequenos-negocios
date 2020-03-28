@@ -72,7 +72,7 @@ class NegocioUsuario(models.Model):
 class Produto(models.Model):
     nome = models.CharField('Nome', max_length=50)
     negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
-    preco = models.PositiveSmallIntegerField('Preço')
+    preco = models.PositiveSmallIntegerField('Preço', default=0)
     categoria = models.ForeignKey(
         'Categoria', on_delete=models.SET_NULL, blank=True, null=True)
 
