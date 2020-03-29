@@ -51,26 +51,30 @@ deep-purple lighten-1
             <v-toolbar-title>Apoie Produtores Locais</v-toolbar-title>
         </v-app-bar>
 
-        <v-navigation-drawer app v-model="drawer">
-            <v-list dense>
-                <v-list-item link>
-                    <v-list-item-action>
-                        <v-icon>mdi-magnify</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Pesquisar</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                {% if request.user.is_superuser %}
-                <v-list-item link>
-                    <v-list-item-action>
-                        <v-icon>mdi-search</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title>Administrar negócios</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
-                {% endif %}
+        <v-navigation-drawer app v-model="drawer" temporary color="lime lighten-2">
+            <v-list>
+                <v-list-item-group v-model="estadoDrawer">
+                    <v-list-item :value="estadoAtual !== estadoAdministrar">
+                        <v-list-item-action>
+                            <v-icon>mdi-magnify</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>
+                                Pesquisar
+                            </v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    {% if request.user.is_superuser %}
+                    <v-list-item :value="estadoAtual === estadoAdministrar">
+                        <v-list-item-action>
+                            <v-icon>mdi-people</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Administrar negócio</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    {% endif %}
+                </v-list-item-group>
             </v-list>
         </v-navigation-drawer>
 
@@ -423,9 +427,14 @@ deep-purple lighten-1
         // Geral
         const ESTADO_LISTA = 1;
         const ESTADO_DETALHE = 2;
+        const ESTADO_ADMINISTRAR = 3;
 
         // Modal
+        const ESTADO_FECHADO = 0;
         const ESTADO_ALTERACAO_NEGOCIO = 1;
+        const ESTADO_ALTERACAO_CONTATO = 2;
+        const ESTADO_ALTERACAO_REGIAO_ENTREGA = 3;
+        const ESTADO_ALTERACAO_PRODUTO = 4;
 
         const CATEGORIA_CONGELADOS = 1;
         const CATEGORIA_SALGADOS = 2;
@@ -466,8 +475,11 @@ deep-purple lighten-1
 
                     elementoAlterado: '',
                     erros: {},
-                    estadoAtual: 0,
+                    estadoAtual: ESTADO_FECHADO,
                     estadoAlteracaoNegocio: ESTADO_ALTERACAO_NEGOCIO,
+                    estadoAlteracaoContato: ESTADO_ALTERACAO_CONTATO,
+                    estadoAlteracaoRegiaoEntrega: ESTADO_ALTERACAO_REGIAO_ENTREGA,
+                    estadoAlteracaoProduto: ESTADO_ALTERACAO_PRODUTO,
                     form: {},
                     formValido: false,
                     headline: '',
@@ -480,9 +492,12 @@ deep-purple lighten-1
                 negocioSelecionado: null,
                 regioesEntrega: [{ id: 0, nome: 'Todas' },],
 
+                estadoDrawer: true,
+
                 estadoAtual: ESTADO_LISTA,
                 estadoLista: ESTADO_LISTA,
                 estadoDetalhe: ESTADO_DETALHE,
+                estadoAdministrar: ESTADO_ADMINISTRAR,
 
                 pesquisa: {
                     categoria: 0,
