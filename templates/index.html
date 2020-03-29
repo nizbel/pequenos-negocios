@@ -54,7 +54,7 @@ deep-purple lighten-1
         <v-navigation-drawer app v-model="drawer" temporary color="lime lighten-2">
             <v-list>
                 <v-list-item-group v-model="estadoDrawer">
-                    <v-list-item :value="estadoAtual !== estadoAdministrar">
+                    <v-list-item :value="estadoAtual !== estadoAdministrar" @click="irParaPesquisa()">
                         <v-list-item-action>
                             <v-icon>mdi-magnify</v-icon>
                         </v-list-item-action>
@@ -65,9 +65,9 @@ deep-purple lighten-1
                         </v-list-item-content>
                     </v-list-item>
                     {% if request.user.is_superuser %}
-                    <v-list-item :value="estadoAtual === estadoAdministrar">
+                    <v-list-item :value="estadoAtual === estadoAdministrar" @click="irParaAdministracao()">
                         <v-list-item-action>
-                            <v-icon>mdi-people</v-icon>
+                            <v-icon>mdi-account-details</v-icon>
                         </v-list-item-action>
                         <v-list-item-content>
                             <v-list-item-title>Administrar negócio</v-list-item-title>
@@ -321,8 +321,115 @@ deep-purple lighten-1
                 Modais de formulário
                 {% endcomment %}
                 {% if request.user.is_superuser %}
-                <v-btn color="deep-purple lighten-1" text @click="mostrarModalForm('negocio', null, false)">
-                    Novo negócio</v-btn>
+                <v-row class="mx-0" v-if="estadoAtual === estadoAdministrar">
+                    <v-col cols="12">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+
+                                <v-btn color="deep-purple lighten-1" text
+                                    @click="mostrarModalForm('negocio', null, false)" v-if="meuNegocio === null">
+                                    <v-icon>mdi-plus</v-icon> Novo negócio
+                                </v-btn>
+
+                                <v-row v-if="meuNegocio !== null">
+                                    <v-col cols="12" class="py-0">
+                                        <h2>[[ meuNegocio.nome ]]
+                                            <span v-if="meuNegocio.instagram.length > 0">
+                                                <a :href="meuNegocio.instagram">
+                                                    <v-icon large>mdi-instagram</v-icon>
+                                                </a>
+                                            </span>
+                                            <v-btn color="deep-purple lighten-1" text
+                                                @click="mostrarModalForm('negocio', meuNegocio, false)">
+                                                <v-icon>mdi-pencil</v-icon>
+                                            </v-btn>
+                                        </h2>
+                                    </v-col>
+                                    <v-col cols="12" class="py-0">
+                                        <h4>[[meuNegocio.endereco]]</h4>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Contatos
+                                            <v-btn color="deep-purple lighten-1" text
+                                                @click="mostrarModalForm('contato', null, false)">
+                                                <v-icon>mdi-plus</v-icon>
+                                            </v-btn>
+                                        </h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(contato, indexContato) in meuNegocio.contatos">
+                                            <span>[[ contato.nome_telefone ]]
+                                                <a v-if="contato.whatsapp" :href="contato.whatsapp">
+                                                    <v-icon>mdi-whatsapp</v-icon>
+                                                </a>
+                                            </span>
+                                        </v-col>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Formas de pagamento</h4>
+                                        <span>[[ meuNegocio.formas_pagamento ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Formas de entrega</h4>
+                                        <span>[[ formatarFormaEntrega(meuNegocio.formas_entrega)
+                                            ]]</span>
+                                    </v-col>
+
+                                    <v-col v-if="meuNegocio.valor_minimo > 0" cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">
+                                            Valor mínimo do pedido
+                                        </h4>
+                                        <span>[[ formatarPreco(meuNegocio.valor_minimo)
+                                            ]]</span>
+                                    </v-col>
+
+                                    <v-col cols="12" md="3" class="py-0">
+                                        <h4 class="mt-2">Regiões de entrega</h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(regiaoEntrega, indexRegiaoEntrega) in meuNegocio.regioes_entrega">
+                                            <v-row>
+                                                <v-col cols="8" class="py-0">
+                                                    <span>
+                                                        [[ regiaoEntrega.nomeRegiao ]]
+                                                    </span>
+                                                </v-col>
+                                                <v-col cols="4" class="py-0 pl-0">
+                                                    <span v-if="regiaoEntrega.taxa_entrega > 0"
+                                                        class="float-right font-weight-bold">[[
+                                                        formatarPreco(regiaoEntrega.taxa_entrega)
+                                                        ]]</span>
+                                                </v-col>
+                                            </v-row>
+                                        </v-col>
+                                    </v-col>
+
+                                    <v-col cols="12" md="4" class="py-0">
+                                        <h4 class="mt-2">Produtos</h4>
+                                        <v-col cols="12" class="pa-0"
+                                            v-for="(produto, indexProduto) in meuNegocio.produtos">
+                                            <v-row>
+                                                <v-col cols="8" class="py-0">
+                                                    <span>
+                                                        <v-icon>[[ buscarCategoriaIcone(produto.categoria) ]]</v-icon>
+                                                        [[ produto.nome ]]
+                                                    </span>
+                                                </v-col>
+                                                <v-col cols="4" class="py-0 pl-0">
+                                                    <span v-if="produto.preco > 0"
+                                                        class="float-right font-weight-bold">[[
+                                                        formatarPreco(produto.preco)
+                                                        ]]</span>
+                                                </v-col>
+                                            </v-row>
+                                        </v-col>
+                                    </v-col>
+                                </v-row>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
 
                 <v-dialog v-model="modal.show" persistent max-width="90%">
                     <v-card>
@@ -340,7 +447,7 @@ deep-purple lighten-1
                                             <v-text-field outlined label="Nome*"
                                                 :rules="[v => !!v || 'Campo obrigatório']" name="nome"
                                                 :disabled="modal.method === 'DELETE'" :error-messages="modal.erros.nome"
-                                                hint="Nome do negócio">
+                                                hint="Nome do negócio" v-model="modal.form.nome">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6">
@@ -348,7 +455,8 @@ deep-purple lighten-1
                                                 :items="[{value: 1, text: 'Delivery'}, {value: 2, text: 'Take Out'}, {value: 3, text: 'Delivery e Take Out'}]"
                                                 :error-messages="modal.erros.formas_entrega" label="Formas de entrega*"
                                                 name="formas_entrega" :disabled="modal.method === 'DELETE'"
-                                                :rules="[v => !!v || 'Campo obrigatório']">
+                                                :rules="[v => !!v || 'Campo obrigatório']"
+                                                v-model="modal.form.formas_entrega">
                                             </v-select>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
@@ -368,14 +476,15 @@ deep-purple lighten-1
                                                 :rules="[v => !!v || 'Campo obrigatório']" name="formas_pagamento"
                                                 :error-messages="modal.erros.formas_pagamento"
                                                 hint="Transferências, cartão de crédito/débito e outros"
-                                                :disabled="modal.method === 'DELETE'">
+                                                :disabled="modal.method === 'DELETE'"
+                                                v-model="modal.form.formas_pagamento">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Endereço" name="endereco"
                                                 :error-messages="modal.erros.endereco"
                                                 hint="Endereço do negócio, se houver"
-                                                :disabled="modal.method === 'DELETE'">
+                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.endereco">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
@@ -383,13 +492,14 @@ deep-purple lighten-1
                                                 name="taxa_padrao_entrega" type="number" prefix="R$"
                                                 :error-messages="modal.erros.taxa_padrao_entrega"
                                                 hint="Taxa padrão que irá aparecer ao definir regiões para entrega"
-                                                :disabled="modal.method === 'DELETE'">
+                                                :disabled="modal.method === 'DELETE'"
+                                                v-model="modal.form.taxa_padrao_entrega">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Instagram" name="instagram"
                                                 hint="Perfil no Instagram" :error-messages="modal.erros.instagram"
-                                                :disabled="modal.method === 'DELETE'">
+                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.instagram">
                                             </v-text-field>
                                         </v-col>
                                     </v-row>
@@ -490,6 +600,7 @@ deep-purple lighten-1
                 categorias: [{ id: 0, nome: 'Todas' },],
                 negocios: [],
                 negocioSelecionado: null,
+                meuNegocio: null,
                 regioesEntrega: [{ id: 0, nome: 'Todas' },],
 
                 estadoDrawer: true,
@@ -639,6 +750,10 @@ deep-purple lighten-1
                         }
                     }
                 },
+                voltarLista() {
+                    this.negocioSelecionado = null;
+                    this.estadoAtual = this.estadoLista;
+                },
 
                 //{% if request.user.is_superuser %}
                 // Modal
@@ -665,7 +780,7 @@ deep-purple lighten-1
                             .put(this.modal.url, formData)
                             .then(response => {
                                 app.loading.pop();
-                                app.modal.elementoAlterado = response.data;
+                                app.modal.elementoAlterado = Object.assign(app.modal.elementoAlterado, response.data);
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
@@ -698,8 +813,11 @@ deep-purple lighten-1
                             this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Negócio?' : 'Negócio');
                             this.modal.estadoAtual = this.modal.estadoAlteracaoNegocio;
                             this.modal.url = '/api/negocios/';
-                            this.modal.elementoAlterado = 'negocios';
+                            this.modal.elementoAlterado = (objeto ? objeto : 'negocios');
                             break;
+                    }
+                    if (objeto !== null) {
+                        this.modal.form = { ...objeto };
                     }
                     this.modal.method = (objeto === null ? 'POST' : (apagar ? 'DELETE' : 'PUT'));
                     if (objeto !== null) this.modal.url += `${objeto.id}/`;
@@ -724,9 +842,23 @@ deep-purple lighten-1
                 },
                 //{% endif %}
 
-                voltarLista() {
-                    this.negocioSelecionado = null;
-                    this.estadoAtual = this.estadoLista;
+                // Drawer
+                irParaPesquisa() {
+                    this.estadoAtual = (this.negocioSelecionado ? this.estadoDetalhe : this.estadoLista);
+                    this.meuNegocio = null;
+                },
+                irParaAdministracao() {
+                    this.loading.push(1);
+                    axios
+                        .get('/api/negocios/meus/')
+                        .then(response => {
+                            app.loading.pop();
+                            if (response.data.length > 0) {
+                                this.meuNegocio = response.data[0];
+                            }
+                            this.estadoAtual = this.estadoAdministrar;
+                        });
+
                 }
             },
 
