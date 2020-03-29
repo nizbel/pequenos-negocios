@@ -39,6 +39,11 @@ class NegocioViewSet(viewsets.ModelViewSet):
     def create(self, request):
         try:
             with transaction.atomic():
+                # Não é possível usuário ter mais de um negócio
+                if not request.user.is_superuser:
+                    if NegocioUsuario.objects.filter(usuario=request.user).exists():
+                        return Response([])
+
                 result = super().create(request)
                 NegocioUsuario.objects.create(
                     negocio=Negocio.objects.get(id=result.data['id']),
