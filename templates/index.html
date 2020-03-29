@@ -503,6 +503,31 @@ deep-purple lighten-1
                                             </v-text-field>
                                         </v-col>
                                     </v-row>
+                                    <v-row v-if="modal.estadoAtual === modal.estadoAlteracaoContato">
+                                        <input type="hidden" name="negocio" :value="meuNegocio.id" />
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field outlined label="Nome*"
+                                                :rules="[v => !!v || 'Campo obrigatório']" name="nome"
+                                                :disabled="modal.method === 'DELETE'" :error-messages="modal.erros.nome"
+                                                hint="Nome do contato" v-model="modal.form.nome">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field outlined label="Telefone*" name="telefone"
+                                                :rules="[v => !!v || 'Campo obrigatório']"
+                                                :error-messages="modal.erros.telefone" hint="Telefone do contato"
+                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.telefone">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-switch outlined label="Possui Whatsapp?" name="possui_whatsapp"
+                                                hint="Pode realizar atendimento via Whatsapp?"
+                                                :error-messages="modal.erros.possui_whatsapp"
+                                                :disabled="modal.method === 'DELETE'"
+                                                v-model="modal.form.possui_whatsapp">
+                                            </v-switch>
+                                        </v-col>
+                                    </v-row>
                                 </v-container>
                             </v-card-text>
                             <v-card-actions>
@@ -616,7 +641,7 @@ deep-purple lighten-1
                     regiaoEntrega: 0,
                 },
 
-                loading: []
+                loading: [1, 1]
             },
 
             computed: {
@@ -727,6 +752,25 @@ deep-purple lighten-1
                             return null;
                     }
                 },
+                prepararInfoNegocio(negocio) {
+                    // Preparar link instagram
+                    if (negocio.instagram.length > 0) {
+                        negocio.instagram = 'https://instagram.com/' + negocio.instagram;
+                    }
+
+                    for (contato of negocio.contatos) {
+                        if (contato.nome.length > 0) {
+                            contato.nome_telefone = contato.nome + ' ' + this.formatarTelefone(contato.telefone);
+                        } else {
+                            contato.nome_telefone = this.formatarTelefone(contato.telefone);
+                        }
+
+                        // Preparar link whatsapp
+                        if (contato.possui_whatsapp) {
+                            contato.whatsapp = "https://wa.me/55" + contato.telefone;
+                        }
+                    }
+                },
                 selecionarNegocio(negocio) {
                     this.negocioSelecionado = negocio;
                     this.negocioSelecionado.produtos = [];
@@ -809,6 +853,12 @@ deep-purple lighten-1
                 },
                 mostrarModalForm(tipo_objeto, objeto, apagar) {
                     switch (tipo_objeto) {
+                        case 'contato':
+                            this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Contato?' : 'Contato');
+                            this.modal.estadoAtual = this.modal.estadoAlteracaoContato;
+                            this.modal.url = '/api/contatos/';
+                            this.modal.elementoAlterado = (objeto ? objeto : 'meuNegocio.contatos');
+                            break;
                         case 'negocio':
                             this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Negócio?' : 'Negócio');
                             this.modal.estadoAtual = this.modal.estadoAlteracaoNegocio;
@@ -855,6 +905,7 @@ deep-purple lighten-1
                             app.loading.pop();
                             if (response.data.length > 0) {
                                 this.meuNegocio = response.data[0];
+                                app.prepararInfoNegocio(this.meuNegocio);
                             }
                             this.estadoAtual = this.estadoAdministrar;
                         });
@@ -866,30 +917,16 @@ deep-purple lighten-1
                 axios
                     .get('/api/negocios/')
                     .then(response => {
+                        app.loading.pop();
                         this.negocios = response.data;
                         for (negocio of this.negocios) {
-                            // Preparar link instagram
-                            if (negocio.instagram.length > 0) {
-                                negocio.instagram = 'https://instagram.com/' + negocio.instagram;
-                            }
-
-                            for (contato of negocio.contatos) {
-                                if (contato.nome.length > 0) {
-                                    contato.nome_telefone = contato.nome + ' ' + this.formatarTelefone(contato.telefone);
-                                } else {
-                                    contato.nome_telefone = this.formatarTelefone(contato.telefone);
-                                }
-
-                                // Preparar link whatsapp
-                                if (contato.possui_whatsapp) {
-                                    contato.whatsapp = "https://wa.me/55" + contato.telefone;
-                                }
-                            }
+                            app.prepararInfoNegocio(negocio);
                         }
                     });
                 axios
                     .get('/api/categorias/')
                     .then(response => {
+                        app.loading.pop();
                         this.categorias.push(...response.data);
                         for (categoria of this.categorias) {
 
