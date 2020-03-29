@@ -47,22 +47,32 @@ deep-purple lighten-1
 <body>
     <v-app id="app" style="background-color: #F9FBE7;">
         <v-app-bar app color="lime darken-3" dark elevate-on-scroll>
-            <!-- <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon> -->
+            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>Apoie Produtores Locais</v-toolbar-title>
         </v-app-bar>
 
-        <!-- <v-navigation-drawer app v-model="drawer">
+        <v-navigation-drawer app v-model="drawer">
             <v-list dense>
                 <v-list-item link>
                     <v-list-item-action>
-                        <v-icon>mdi-home</v-icon>
+                        <v-icon>mdi-magnify</v-icon>
                     </v-list-item-action>
                     <v-list-item-content>
-                        <v-list-item-title>Home</v-list-item-title>
+                        <v-list-item-title>Pesquisar</v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
+                {% if request.user.is_superuser %}
+                <v-list-item link>
+                    <v-list-item-action>
+                        <v-icon>mdi-search</v-icon>
+                    </v-list-item-action>
+                    <v-list-item-content>
+                        <v-list-item-title>Administrar negócios</v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+                {% endif %}
             </v-list>
-        </v-navigation-drawer> -->
+        </v-navigation-drawer>
 
         <v-content>
             <v-container fluid>
@@ -307,13 +317,13 @@ deep-purple lighten-1
                 Modais de formulário
                 {% endcomment %}
                 {% if request.user.is_superuser %}
-                <v-btn color="deep-purple lighten-1" text @click="mostrarModalForm('negocio', null)">
+                <v-btn color="deep-purple lighten-1" text @click="mostrarModalForm('negocio', null, false)">
                     Novo negócio</v-btn>
 
                 <v-dialog v-model="modal.show" persistent max-width="90%">
                     <v-card>
                         <v-form :method="[[ modal.method ]]" :action="[[ modal.url ]]" ref="form"
-                            @submit.prevent="enviarForm">
+                            @submit.prevent="enviarForm" v-model="modal.formValido">
                             {% csrf_token %}
                             <v-card-title>
                                 <span class="headline">[[ modal.headline ]]</span>
@@ -323,50 +333,59 @@ deep-purple lighten-1
                                 <v-container>
                                     <v-row v-if="modal.estadoAtual === modal.estadoAlteracaoNegocio">
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field outlined label="Nome*" required name="nome"
-                                                :error-messages="modal.erros.nome" hint="Nome do negócio">
+                                            <v-text-field outlined label="Nome*"
+                                                :rules="[v => !!v || 'Campo obrigatório']" name="nome"
+                                                :disabled="modal.method === 'DELETE'" :error-messages="modal.erros.nome"
+                                                hint="Nome do negócio">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6">
                                             <v-select outlined
                                                 :items="[{value: 1, text: 'Delivery'}, {value: 2, text: 'Take Out'}, {value: 3, text: 'Delivery e Take Out'}]"
                                                 :error-messages="modal.erros.formas_entrega" label="Formas de entrega*"
-                                                name="formas_entrega" required>
+                                                name="formas_entrega" :disabled="modal.method === 'DELETE'"
+                                                :rules="[v => !!v || 'Campo obrigatório']">
                                             </v-select>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Valor mínimo"
                                                 :error-messages="modal.erros.valor_minimo" name="valor_minimo"
-                                                hint="Valor mínimo para realizar pedido" type="number" prefix="R$">
+                                                hint="Valor mínimo para realizar pedido" type="number" prefix="R$"
+                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.valor_minimo">
                                             </v-text-field>
                                         </v-col>
-                                        <v-col cols="12" sm="6">
+                                        <v-col cols=" 12" sm="6">
                                             <!-- <v-select outlined
                                                 :items="[{value: 1, text: 'Transferências'}, {value: 2, text: 'Cartão'}, {value: 3, text: 'PicPay'}]"
                                                 :error-messages="modal.erros.formas_pagamento"
-                                                label="Formas de pagamento*" name="formas_pagamento" required>
+                                                label="Formas de pagamento*" name="formas_pagamento" :rules="[v => !!v || 'Campo obrigatório']">
                                             </v-select> -->
-                                            <v-text-field outlined label="Formas de pagamento*" required
-                                                name="formas_pagamento" :error-messages="modal.erros.formas_pagamento"
-                                                hint="Transferências, cartão de crédito/débito e outros">
+                                            <v-text-field outlined label="Formas de pagamento*"
+                                                :rules="[v => !!v || 'Campo obrigatório']" name="formas_pagamento"
+                                                :error-messages="modal.erros.formas_pagamento"
+                                                hint="Transferências, cartão de crédito/débito e outros"
+                                                :disabled="modal.method === 'DELETE'">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Endereço" name="endereco"
                                                 :error-messages="modal.erros.endereco"
-                                                hint="Endereço do negócio, se houver">
+                                                hint="Endereço do negócio, se houver"
+                                                :disabled="modal.method === 'DELETE'">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Taxa padrão de entrega"
                                                 name="taxa_padrao_entrega" type="number" prefix="R$"
                                                 :error-messages="modal.erros.taxa_padrao_entrega"
-                                                hint="Taxa padrão que irá aparecer ao definir regiões para entrega">
+                                                hint="Taxa padrão que irá aparecer ao definir regiões para entrega"
+                                                :disabled="modal.method === 'DELETE'">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
                                             <v-text-field outlined label="Instagram" name="instagram"
-                                                hint="Perfil no Instagram" :error-messages="modal.erros.instagram">
+                                                hint="Perfil no Instagram" :error-messages="modal.erros.instagram"
+                                                :disabled="modal.method === 'DELETE'">
                                             </v-text-field>
                                         </v-col>
                                     </v-row>
@@ -374,9 +393,10 @@ deep-purple lighten-1
                             </v-card-text>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="modal.show = false">Cancelar</v-btn>
-                                <v-btn type="submit" color="deep-purple lighten-1" dark>
-                                    Salvar
+                                <v-btn color="blue darken-1" text @click="fecharModalForm()">Cancelar</v-btn>
+                                <v-btn type="submit" color="deep-purple lighten-1" :dark="submitHabilitado"
+                                    :disabled="!submitHabilitado">
+                                    [[ modal.method === 'DELETE' ? 'Excluir' : 'Salvar' ]]
                                 </v-btn>
                             </v-card-actions>
                         </v-form>
@@ -424,6 +444,11 @@ deep-purple lighten-1
         const CATEGORIA_COMIDA_MEXICANA = 15;
         const CATEGORIA_OVOS = 16;
 
+        {% if request.user.is_superuser %}
+        axios.defaults.xsrfCookieName = 'csrftoken'
+        axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
+        {% endif %}
+
         let app = new Vue({
             el: '#app',
             delimiters: ['[[', ']]'],
@@ -439,11 +464,14 @@ deep-purple lighten-1
                 modal: {
                     show: false,
 
+                    elementoAlterado: '',
                     erros: {},
                     estadoAtual: 0,
                     estadoAlteracaoNegocio: ESTADO_ALTERACAO_NEGOCIO,
+                    form: {},
+                    formValido: false,
                     headline: '',
-                    method: 'POST',
+                    method: '',
                     url: ''
                 },
 
@@ -487,10 +515,16 @@ deep-purple lighten-1
                     }
 
                     return lista.sort(compare);
+                },
+                submitHabilitado: function () {
+                    return this.modal.formValido || this.modal.method === 'DELETE';
                 }
             },
 
             methods: {
+                formatarNumero(event) {
+                    console.log(event);
+                },
                 buscarCategoriaIcone(categoria_id) {
                     if (!categoria_id) return '';
 
@@ -596,15 +630,17 @@ deep-purple lighten-1
                 enviarForm(event) {
                     let formData = new FormData(event.target);
 
+                    this.loading.push(1);
                     if (this.modal.method === 'POST') {
                         axios
                             .post(this.modal.url, formData)
                             .then(response => {
-                                console.log(response.data);
-                                app.negocios.push(response.data);
-                                app.modal.show = false;
+                                app.loading.pop();
+                                app[this.modal.elementoAlterado].push(response.data);
+                                app.fecharModalForm();
                             })
                             .catch(function (error) {
+                                app.loading.pop();
                                 for (const propriedade in error.response.data) {
                                     app.modal.erros = error.response.data;
                                 }
@@ -613,22 +649,63 @@ deep-purple lighten-1
                         axios
                             .put(this.modal.url, formData)
                             .then(response => {
-                                console.log(response.data);
+                                app.loading.pop();
+                                app.modal.elementoAlterado = response.data;
+                                app.fecharModalForm();
+                            })
+                            .catch(function (error) {
+                                app.loading.pop();
+                                for (const propriedade in error.response.data) {
+                                    app.modal.erros = error.response.data;
+                                }
+                            });
+                    } else if (this.modal.method === 'DELETE') {
+                        axios
+                            .delete(this.modal.url, formData)
+                            .then(response => {
+                                app.loading.pop();
+                                for (var i = 0; i < app[this.modal.elementoAlterado].length; i++) {
+                                    if (app[this.modal.elementoAlterado][i].url.indexOf(app.modal.url) !== -1) {
+                                        app[this.modal.elementoAlterado].splice(i, 1);
+                                        break;
+                                    }
+                                }
+                                app.fecharModalForm();
+                            })
+                            .catch(function (error) {
+                                app.loading.pop();
                             });
                     }
                 },
-                mostrarModalForm(tipo_objeto, objeto) {
+                mostrarModalForm(tipo_objeto, objeto, apagar) {
                     switch (tipo_objeto) {
                         case 'negocio':
-                            this.modal.headline = 'Negócio';
+                            this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Negócio?' : 'Negócio');
                             this.modal.estadoAtual = this.modal.estadoAlteracaoNegocio;
                             this.modal.url = '/api/negocios/';
+                            this.modal.elementoAlterado = 'negocios';
                             break;
                     }
-                    this.modal.method = (objeto === null ? 'POST' : 'PUT');
+                    this.modal.method = (objeto === null ? 'POST' : (apagar ? 'DELETE' : 'PUT'));
                     if (objeto !== null) this.modal.url += `${objeto.id}/`;
 
                     this.modal.show = true;
+                },
+                fecharModalForm() {
+                    const padraoModal = {
+                        show: false,
+                        elementoAlterado: '',
+                        erros: {},
+                        estadoAtual: 0,
+                        form: {},
+                        formValido: false,
+                        headline: '',
+                        method: '',
+                        url: ''
+                    };
+                    this.modal = {
+                        ...this.modal, ...padraoModal
+                    };
                 },
                 //{% endif %}
 
