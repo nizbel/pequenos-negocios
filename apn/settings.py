@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'apn.negocios',
+    'performance',
 ]
 
 MIDDLEWARE = [
@@ -50,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'performance.middleware.PerformanceMiddleware'
 ]
 
 ROOT_URLCONF = 'apn.urls'
