@@ -358,11 +358,30 @@ deep-purple lighten-1
                                         </h4>
                                         <v-col cols="12" class="pa-0"
                                             v-for="(contato, indexContato) in meuNegocio.contatos">
-                                            <span>[[ contato.nome_telefone ]]
-                                                <a v-if="contato.whatsapp" :href="contato.whatsapp">
-                                                    <v-icon>mdi-whatsapp</v-icon>
-                                                </a>
-                                            </span>
+                                            <v-menu open-on-click bottom offset-y>
+                                                <template v-slot:activator="{ on }">
+                                                    <span><a v-on="on">[[ contato.nome_telefone ]]</a>
+                                                        <a v-if="contato.whatsapp" :href="contato.whatsapp">
+                                                            <v-icon>mdi-whatsapp</v-icon>
+                                                        </a>
+                                                    </span>
+                                                </template>
+
+                                                <v-list color="lime lighten-5">
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('contato', contato, false)">
+                                                            <v-icon>mdi-pencil</v-icon> Editar
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('contato', contato, true)">
+                                                            <v-icon>mdi-delete</v-icon> Excluir
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
                                         </v-col>
                                     </v-col>
 
@@ -386,43 +405,94 @@ deep-purple lighten-1
                                     </v-col>
 
                                     <v-col cols="12" md="3" class="py-0">
-                                        <h4 class="mt-2">Regiões de entrega</h4>
+                                        <h4 class="mt-2">Regiões de entrega
+                                            <v-btn color="deep-purple lighten-1" text
+                                                @click="mostrarModalForm('regiao-entrega', null, false)">
+                                                <v-icon>mdi-plus</v-icon>
+                                            </v-btn>
+                                        </h4>
                                         <v-col cols="12" class="pa-0"
                                             v-for="(regiaoEntrega, indexRegiaoEntrega) in meuNegocio.regioes_entrega">
-                                            <v-row>
-                                                <v-col cols="8" class="py-0">
-                                                    <span>
-                                                        [[ regiaoEntrega.nomeRegiao ]]
-                                                    </span>
-                                                </v-col>
-                                                <v-col cols="4" class="py-0 pl-0">
-                                                    <span v-if="regiaoEntrega.taxa_entrega > 0"
-                                                        class="float-right font-weight-bold">[[
-                                                        formatarPreco(regiaoEntrega.taxa_entrega)
-                                                        ]]</span>
-                                                </v-col>
-                                            </v-row>
+                                            <v-menu open-on-click bottom offset-y>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-row>
+                                                        <v-col cols="8" class="py-0">
+                                                            <span><a v-on="on">
+                                                                    [[ regiaoEntrega.nomeRegiao ]]
+                                                                </a> </span>
+                                                        </v-col>
+                                                        <v-col cols="4" class="py-0 pl-0">
+                                                            <span v-if="regiaoEntrega.taxa_entrega > 0"
+                                                                class="float-right font-weight-bold">[[
+                                                                formatarPreco(regiaoEntrega.taxa_entrega)
+                                                                ]]</span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </template>
+
+                                                <v-list color="lime lighten-5">
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('regiao-entrega', regiaoEntrega, false)">
+                                                            <v-icon>mdi-pencil</v-icon> Editar
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('regiao-entrega', regiaoEntrega, true)">
+                                                            <v-icon>mdi-delete</v-icon> Excluir
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
                                         </v-col>
                                     </v-col>
 
                                     <v-col cols="12" md="4" class="py-0">
-                                        <h4 class="mt-2">Produtos</h4>
+                                        <h4 class="mt-2">Produtos
+                                            <v-btn color="deep-purple lighten-1" text
+                                                @click="mostrarModalForm('produto', null, false)">
+                                                <v-icon>mdi-plus</v-icon>
+                                            </v-btn>
+                                        </h4>
                                         <v-col cols="12" class="pa-0"
                                             v-for="(produto, indexProduto) in meuNegocio.produtos">
-                                            <v-row>
-                                                <v-col cols="8" class="py-0">
-                                                    <span>
-                                                        <v-icon>[[ buscarCategoriaIcone(produto.categoria) ]]</v-icon>
-                                                        [[ produto.nome ]]
-                                                    </span>
-                                                </v-col>
-                                                <v-col cols="4" class="py-0 pl-0">
-                                                    <span v-if="produto.preco > 0"
-                                                        class="float-right font-weight-bold">[[
-                                                        formatarPreco(produto.preco)
-                                                        ]]</span>
-                                                </v-col>
-                                            </v-row>
+                                            <v-menu open-on-click bottom offset-y>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-row>
+                                                        <v-col cols="8" class="py-0">
+                                                            <span><a v-on="on">
+                                                                    <v-icon>[[ buscarCategoriaIcone(produto.categoria)
+                                                                        ]]
+                                                                    </v-icon>
+                                                                    [[ produto.nome ]]
+                                                                </a>
+                                                            </span>
+                                                        </v-col>
+                                                        <v-col cols="4" class="py-0 pl-0">
+                                                            <span v-if="produto.preco > 0"
+                                                                class="float-right font-weight-bold">[[
+                                                                formatarPreco(produto.preco)
+                                                                ]]</span>
+                                                        </v-col>
+                                                    </v-row>
+                                                </template>
+
+                                                <v-list color="lime lighten-5">
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('produto', produto, false)">
+                                                            <v-icon>mdi-pencil</v-icon> Editar
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                    <v-list-item>
+                                                        <v-btn color="deep-purple lighten-1" text
+                                                            @click="mostrarModalForm('produto', produto, true)">
+                                                            <v-icon>mdi-delete</v-icon> Excluir
+                                                        </v-btn>
+                                                    </v-list-item>
+                                                </v-list>
+                                            </v-menu>
                                         </v-col>
                                     </v-col>
                                 </v-row>
@@ -460,10 +530,12 @@ deep-purple lighten-1
                                             </v-select>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field outlined label="Valor mínimo"
-                                                :error-messages="modal.erros.valor_minimo" name="valor_minimo"
-                                                hint="Valor mínimo para realizar pedido" type="number" prefix="R$"
-                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.valor_minimo">
+                                            <input type="hidden" name="valor_minimo"
+                                                v-model="modal.form.valor_minimo" />
+                                            <v-text-field outlined label="Valor mínimo" v-model="valor_minimoFormatado"
+                                                :error-messages="modal.erros.valor_minimo"
+                                                hint="Valor mínimo para realizar pedido" prefix="R$"
+                                                :disabled="modal.method === 'DELETE'">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols=" 12" sm="6">
@@ -488,12 +560,13 @@ deep-purple lighten-1
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field outlined label="Taxa padrão de entrega"
-                                                name="taxa_padrao_entrega" type="number" prefix="R$"
+                                            <input type="hidden" name="taxa_padrao_entrega"
+                                                v-model="modal.form.taxa_padrao_entrega" />
+                                            <v-text-field outlined label="Taxa padrão de entrega" prefix="R$"
                                                 :error-messages="modal.erros.taxa_padrao_entrega"
                                                 hint="Taxa padrão que irá aparecer ao definir regiões para entrega"
                                                 :disabled="modal.method === 'DELETE'"
-                                                v-model="modal.form.taxa_padrao_entrega">
+                                                v-model="taxa_padrao_entregaFormatada">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
@@ -513,10 +586,12 @@ deep-purple lighten-1
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
-                                            <v-text-field outlined label="Telefone*" name="telefone"
+                                            <input type="hidden" name="telefone" v-model="modal.form.telefone" />
+                                            <v-text-field outlined label="Telefone*"
                                                 :rules="[v => !!v || 'Campo obrigatório']"
-                                                :error-messages="modal.erros.telefone" hint="Telefone do contato"
-                                                :disabled="modal.method === 'DELETE'" v-model="modal.form.telefone">
+                                                :error-messages="modal.erros.telefone"
+                                                hint="Telefone do contato com código de área, digite apenas números"
+                                                :disabled="modal.method === 'DELETE'" v-model="telefoneFormatado">
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="4">
@@ -524,8 +599,56 @@ deep-purple lighten-1
                                                 hint="Pode realizar atendimento via Whatsapp?"
                                                 :error-messages="modal.erros.possui_whatsapp"
                                                 :disabled="modal.method === 'DELETE'"
-                                                v-model="modal.form.possui_whatsapp">
+                                                v-model="modal.form.possui_whatsapp"
+                                                :value="modal.form.possui_whatsapp">
                                             </v-switch>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-if="modal.estadoAtual === modal.estadoAlteracaoProduto">
+                                        <input type="hidden" name="negocio" :value="meuNegocio.id" />
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-text-field outlined label="Nome*"
+                                                :rules="[v => !!v || 'Campo obrigatório']" name="nome"
+                                                :disabled="modal.method === 'DELETE'" :error-messages="modal.erros.nome"
+                                                hint="Nome do produto" v-model="modal.form.nome">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <input type="hidden" name="preco" v-model="modal.form.preco" />
+                                            <v-text-field outlined label="Preço" :error-messages="modal.erros.preco"
+                                                hint="Preço do produto" prefix="R$"
+                                                :disabled="modal.method === 'DELETE'" v-model="precoFormatado"
+                                                :value="meuNegocio.taxa_padrao_entrega">
+                                            </v-text-field>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-select outlined :items="categorias.slice(1)"
+                                                :error-messages="modal.erros.categoria" label="Categoria*"
+                                                name="categoria" :disabled="modal.method === 'DELETE'"
+                                                :rules="[v => !!v || 'Campo obrigatório']"
+                                                v-model="modal.form.categoria" item-text="nome" item-value="id">
+                                            </v-select>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row v-if="modal.estadoAtual === modal.estadoAlteracaoRegiaoEntrega">
+                                        <input type="hidden" name="negocio" :value="meuNegocio.id" />
+                                        <v-col cols="12" sm="6" md="4">
+                                            <v-select outlined :items="regioesEntrega.slice(1)"
+                                                :error-messages="modal.erros.regiao" label="Região*" name="regiao"
+                                                :disabled="modal.method === 'DELETE'"
+                                                :rules="[v => !!v || 'Campo obrigatório']" v-model="modal.form.regiao"
+                                                item-text="nome" item-value="id">
+                                            </v-select>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="4">
+                                            <input type="hidden" name="taxa_entrega"
+                                                v-model="modal.form.taxa_entrega" />
+                                            <v-text-field outlined label="Taxa de entrega"
+                                                :error-messages="modal.erros.taxa_entrega"
+                                                hint="Valor da taxa de entrega para a região" prefix="R$"
+                                                :disabled="modal.method === 'DELETE'" v-model="taxa_entregaFormatada"
+                                                :value="meuNegocio.taxa_padrao_entrega">
+                                            </v-text-field>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -608,7 +731,7 @@ deep-purple lighten-1
                 modal: {
                     show: false,
 
-                    elementoAlterado: '',
+                    elementoAlterado: null,
                     erros: {},
                     estadoAtual: ESTADO_FECHADO,
                     estadoAlteracaoNegocio: ESTADO_ALTERACAO_NEGOCIO,
@@ -669,13 +792,52 @@ deep-purple lighten-1
                 },
                 submitHabilitado: function () {
                     return this.modal.formValido || this.modal.method === 'DELETE';
+                },
+                precoFormatado: {
+                    get: function () {
+                        return this.formatarPrecoForm(this.modal.form.preco);
+                    },
+                    set: function (newValue) {
+                        this.modal.form.preco = newValue.replace(/\D/g, '');
+                    }
+                },
+                taxa_entregaFormatada: {
+                    get: function () {
+                        return this.formatarPrecoForm(this.modal.form.taxa_entrega);
+                    },
+                    set: function (newValue) {
+                        this.modal.form.taxa_entrega = newValue.replace(/\D/g, '');
+                    }
+                },
+                taxa_padrao_entregaFormatada: {
+                    get: function () {
+                        return this.formatarPrecoForm(this.modal.form.taxa_padrao_entrega);
+                    },
+                    set: function (newValue) {
+                        this.modal.form.taxa_padrao_entrega = newValue.replace(/\D/g, '');
+                    }
+                },
+                telefoneFormatado: {
+                    get: function () {
+                        console.log('get', this.modal.form.telefone, this.formatarTelefone(this.modal.form.telefone));
+                        return this.formatarTelefone(this.modal.form.telefone);
+                    },
+                    set: function (newValue) {
+                        console.log('set', newValue);
+                        this.modal.form.telefone = newValue.replace(/\D/g, '');
+                    }
+                },
+                valor_minimoFormatado: {
+                    get: function () {
+                        return this.formatarPrecoForm(this.modal.form.valor_minimo);
+                    },
+                    set: function (newValue) {
+                        this.modal.form.valor_minimo = newValue.replace(/\D/g, '');
+                    }
                 }
             },
 
             methods: {
-                formatarNumero(event) {
-                    console.log(event);
-                },
                 buscarCategoriaIcone(categoria_id) {
                     if (!categoria_id) return '';
 
@@ -730,8 +892,22 @@ deep-purple lighten-1
                     }
                     return `R$ ${Math.floor(preco / 100)},${centavos}`;
                 },
+                formatarPrecoForm(valor) {
+                    valor = valor || 0;
+                    valor = Number(String(valor).replace(/\D/g, ''));
+
+                    var centavos = String(valor % 100);
+                    if (centavos.length < 2) {
+                        centavos = "0".concat(centavos);
+                    }
+                    return `${Math.floor(valor / 100)},${centavos}`;
+                },
                 formatarTelefone(telefone) {
-                    if (!telefone) return null;
+                    telefone = telefone || '';
+
+                    if (telefone.length < 8) {
+                        return telefone;
+                    }
 
                     const ddd = telefone.substring(0, 2);
                     const parte1 = telefone.substring(2, telefone.length - 4);
@@ -771,21 +947,9 @@ deep-purple lighten-1
                         }
                     }
                 },
-                selecionarNegocio(negocio) {
-                    this.negocioSelecionado = negocio;
-                    this.negocioSelecionado.produtos = [];
-                    this.estadoAtual = this.estadoDetalhe;
-
-                    this.loading.push(1);
-                    axios
-                        .get(`/api/negocios/${this.negocioSelecionado.id}/produtos/`)
-                        .then(response => {
-                            this.loading.pop();
-                            this.negocioSelecionado.produtos = response.data;
-                        });
-
+                prepararInfoNegocioRegioesEntrega(negocio) {
                     // Definir nomes para regiões de entrega
-                    for (regiao_entrega of this.negocioSelecionado.regioes_entrega) {
+                    for (regiao_entrega of negocio.regioes_entrega) {
                         for (regiao of this.regioesEntrega) {
                             if (regiao_entrega.regiao === regiao.id) {
                                 regiao_entrega.nomeRegiao = regiao.nome;
@@ -793,6 +957,30 @@ deep-purple lighten-1
                             }
                         }
                     }
+                },
+                selecionarNegocio(negocio) {
+                    this.negocioSelecionado = negocio;
+                    this.negocioSelecionado.produtos = [];
+                    this.estadoAtual = this.estadoDetalhe;
+
+                    this.loading.push(1);
+                    axios
+                        .get(`${this.negocioSelecionado.url}produtos/`)
+                        .then(response => {
+                            this.loading.pop();
+                            this.negocioSelecionado.produtos = response.data;
+                        });
+
+                    // Definir nomes para regiões de entrega
+                    // for (regiao_entrega of this.negocioSelecionado.regioes_entrega) {
+                    //     for (regiao of this.regioesEntrega) {
+                    //         if (regiao_entrega.regiao === regiao.id) {
+                    //             regiao_entrega.nomeRegiao = regiao.nome;
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    this.prepararInfoNegocioRegioesEntrega(this.negocioSelecionado);
                 },
                 voltarLista() {
                     this.negocioSelecionado = null;
@@ -803,6 +991,12 @@ deep-purple lighten-1
                 // Modal
                 enviarForm(event) {
                     let formData = new FormData(event.target);
+                    for (var pair of formData.entries()) {
+                        console.log(pair[0] + ', ' + pair[1]);
+                    }
+                    // if (2 === 2) {
+                    //     return;
+                    // }
 
                     this.loading.push(1);
                     if (this.modal.method === 'POST') {
@@ -810,7 +1004,11 @@ deep-purple lighten-1
                             .post(this.modal.url, formData)
                             .then(response => {
                                 app.loading.pop();
-                                app[this.modal.elementoAlterado].push(response.data);
+                                this.modal.elementoAlterado.push(response.data);
+
+                                if (this.modal.estadoAtual === ESTADO_ALTERACAO_REGIAO_ENTREGA) {
+                                    this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
+                                }
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
@@ -838,10 +1036,12 @@ deep-purple lighten-1
                             .delete(this.modal.url, formData)
                             .then(response => {
                                 app.loading.pop();
-                                for (var i = 0; i < app[this.modal.elementoAlterado].length; i++) {
-                                    if (app[this.modal.elementoAlterado][i].url.indexOf(app.modal.url) !== -1) {
-                                        app[this.modal.elementoAlterado].splice(i, 1);
-                                        break;
+                                if (this.modal.elementoAlterado) {
+                                    for (var i = 0; i < this.modal.elementoAlterado.length; i++) {
+                                        if (this.modal.elementoAlterado[i].url.indexOf(app.modal.url) !== -1) {
+                                            this.modal.elementoAlterado.splice(i, 1);
+                                            break;
+                                        }
                                     }
                                 }
                                 app.fecharModalForm();
@@ -856,30 +1056,42 @@ deep-purple lighten-1
                         case 'contato':
                             this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Contato?' : 'Contato');
                             this.modal.estadoAtual = this.modal.estadoAlteracaoContato;
-                            this.modal.url = '/api/contatos/';
-                            this.modal.elementoAlterado = (objeto ? objeto : 'meuNegocio.contatos');
+                            this.modal.url = (objeto == null ? '/api/contatos/' : objeto.url);
+                            this.modal.elementoAlterado = (objeto && !apagar ? objeto : this.meuNegocio.contatos);
                             break;
                         case 'negocio':
                             this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Negócio?' : 'Negócio');
                             this.modal.estadoAtual = this.modal.estadoAlteracaoNegocio;
-                            this.modal.url = '/api/negocios/';
-                            this.modal.elementoAlterado = (objeto ? objeto : 'negocios');
+                            this.modal.url = (objeto == null ? '/api/negocios/' : objeto.url);
+                            this.modal.elementoAlterado = (objeto && !apagar ? objeto : this.negocios);
+                            break;
+                        case 'produto':
+                            this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Produto?' : 'Produto');
+                            this.modal.estadoAtual = this.modal.estadoAlteracaoProduto;
+                            this.modal.url = (objeto == null ? '/api/produtos/' : objeto.url);
+                            this.modal.elementoAlterado = (objeto && !apagar ? objeto : this.meuNegocio.produtos);
+                            break;
+                        case 'regiao-entrega':
+                            this.modal.headline = (apagar ? 'Deseja realmente excluir a seguinte Região de entrega?' : 'Região de entrega');
+                            this.modal.estadoAtual = this.modal.estadoAlteracaoRegiaoEntrega;
+                            this.modal.url = (objeto == null ? '/api/negocios/regioes-entrega/' : objeto.url);
+                            this.modal.elementoAlterado = (objeto && !apagar ? objeto : this.meuNegocio.regioes_entrega);
+                            this.modal.form.taxa_entrega = 0;
                             break;
                     }
+
                     if (objeto !== null) {
                         this.modal.form = { ...objeto };
                     }
                     this.modal.method = (objeto === null ? 'POST' : (apagar ? 'DELETE' : 'PUT'));
-                    if (objeto !== null) this.modal.url += `${objeto.id}/`;
-
                     this.modal.show = true;
                 },
                 fecharModalForm() {
                     const padraoModal = {
                         show: false,
-                        elementoAlterado: '',
+                        elementoAlterado: null,
                         erros: {},
-                        estadoAtual: 0,
+                        estadoAtual: ESTADO_FECHADO,
                         form: {},
                         formValido: false,
                         headline: '',
@@ -896,6 +1108,7 @@ deep-purple lighten-1
                 irParaPesquisa() {
                     this.estadoAtual = (this.negocioSelecionado ? this.estadoDetalhe : this.estadoLista);
                     this.meuNegocio = null;
+                    this.drawer = false;
                 },
                 irParaAdministracao() {
                     this.loading.push(1);
@@ -904,12 +1117,28 @@ deep-purple lighten-1
                         .then(response => {
                             app.loading.pop();
                             if (response.data.length > 0) {
-                                this.meuNegocio = response.data[0];
-                                app.prepararInfoNegocio(this.meuNegocio);
+                                for (negocio of app.negocios) {
+                                    if (negocio.id === response.data[0].id) {
+                                        this.meuNegocio = negocio;
+
+                                        // Buscar produtos
+                                        this.loading.push(1);
+                                        axios
+                                            .get(`${this.meuNegocio.url}produtos/`)
+                                            .then(response => {
+                                                this.loading.pop();
+                                                this.meuNegocio.produtos = response.data;
+                                            });
+                                        // Definir nomes para regiões de entrega
+                                        this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
+                                        break;
+                                    }
+                                }
                             }
                             this.estadoAtual = this.estadoAdministrar;
                         });
 
+                    this.drawer = false;
                 }
             },
 
