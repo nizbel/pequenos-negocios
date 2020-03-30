@@ -979,6 +979,15 @@ deep-purple lighten-1
                         }
                     }
                 },
+                prepararInfoNegocioProdutos(negocio) {
+                    this.loading.push(1);
+                    axios
+                        .get(`${negocio.url}produtos/`)
+                        .then(response => {
+                            this.loading.pop();
+                            negocio.produtos = response.data;
+                        });
+                },
                 prepararInfoNegocioRegioesEntrega(negocio) {
                     // Definir nomes para regiões de entrega
                     for (regiao_entrega of negocio.regioes_entrega) {
@@ -995,13 +1004,7 @@ deep-purple lighten-1
                     this.negocioSelecionado.produtos = [];
                     this.estadoAtual = this.estadoDetalhe;
 
-                    this.loading.push(1);
-                    axios
-                        .get(`${this.negocioSelecionado.url}produtos/`)
-                        .then(response => {
-                            this.loading.pop();
-                            this.negocioSelecionado.produtos = response.data;
-                        });
+                    this.prepararInfoNegocioProdutos(this.negocioSelecionado)
 
                     this.prepararInfoNegocioRegioesEntrega(this.negocioSelecionado);
                 },
@@ -1014,12 +1017,6 @@ deep-purple lighten-1
                 // Modal
                 enviarForm(event) {
                     let formData = new FormData(event.target);
-                    // for (var pair of formData.entries()) {
-                    //     console.log(pair[0] + ', ' + pair[1]);
-                    // }
-                    // if (2 === 2) {
-                    //     return;
-                    // }
 
                     this.loading.push(1);
                     if (this.modal.method === 'POST') {
@@ -1027,11 +1024,16 @@ deep-purple lighten-1
                             .post(this.modal.url, formData)
                             .then(response => {
                                 app.loading.pop();
-                                this.modal.elementoAlterado.push(response.data);
+                                // Preencher negócio
+                                if (app.modal.estadoAtual === ESTADO_ALTERACAO_NEGOCIO) {
+                                    app.meuNegocio = response.data;
+                                    app.meuNegocio.produtos = [];
+                                }
+                                app.modal.elementoAlterado.push(response.data);
 
                                 // Atualizar
-                                this.prepararInfoNegocio(this.meuNegocio);
-                                this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
+                                app.prepararInfoNegocio(app.meuNegocio);
+                                app.prepararInfoNegocioRegioesEntrega(app.meuNegocio);
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
@@ -1048,8 +1050,8 @@ deep-purple lighten-1
                                 app.modal.elementoAlterado = Object.assign(app.modal.elementoAlterado, response.data);
 
                                 // Atualizar
-                                this.prepararInfoNegocio(this.meuNegocio);
-                                this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
+                                app.prepararInfoNegocio(app.meuNegocio);
+                                app.prepararInfoNegocioRegioesEntrega(app.meuNegocio);
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
@@ -1063,10 +1065,10 @@ deep-purple lighten-1
                             .delete(this.modal.url, formData)
                             .then(response => {
                                 app.loading.pop();
-                                if (this.modal.elementoAlterado) {
-                                    for (var i = 0; i < this.modal.elementoAlterado.length; i++) {
-                                        if (this.modal.elementoAlterado[i].url.indexOf(app.modal.url) !== -1) {
-                                            this.modal.elementoAlterado.splice(i, 1);
+                                if (app.modal.elementoAlterado) {
+                                    for (var i = 0; i < app.modal.elementoAlterado.length; i++) {
+                                        if (app.modal.elementoAlterado[i].url.indexOf(app.modal.url) !== -1) {
+                                            app.modal.elementoAlterado.splice(i, 1);
                                             break;
                                         }
                                     }
@@ -1150,13 +1152,7 @@ deep-purple lighten-1
                                         this.meuNegocio = negocio;
 
                                         // Buscar produtos
-                                        this.loading.push(1);
-                                        axios
-                                            .get(`${this.meuNegocio.url}produtos/`)
-                                            .then(response => {
-                                                this.loading.pop();
-                                                this.meuNegocio.produtos = response.data;
-                                            });
+                                        this.prepararInfoNegocioProdutos(this.meuNegocio);
                                         // Definir nomes para regiões de entrega
                                         this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
                                         break;
