@@ -26,6 +26,24 @@ admin.site.register(User, UserAdmin)
 
 admin.site.register(InfoPerfilUsuario)
 
+
+class NegocioAdmin(admin.ModelAdmin):
+    list_display = ('nome',
+                    'valor_minimo', 'formas_pagamento', 'endereco', 'taxa_padrao_entrega', 'instagram')
+    search_fields = ['user__username', 'url']
+
+    def has_add_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
+admin.site.register(Negocio, NegocioAdmin)
+
 admin.site.register(NegocioUsuario)
 
 admin.site.register(Produto)
