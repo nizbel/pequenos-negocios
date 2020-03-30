@@ -1,0 +1,67 @@
+{% extends 'account/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Signup" %}{% endblock %}
+
+{% block content %}
+<h1>{% trans "Sign Up" %}</h1>
+
+<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
+
+<v-form ref="form" method="post" action="{% url 'account_signup' %}" v-model="formValido">
+	{% csrf_token %}
+	{% include 'form.html' with form=form tamanho_colunas=12 %}
+
+	{% if redirect_field_value %}
+	<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+	{% endif %}
+	<v-row>
+		<v-col cols="12">
+			<v-btn class="float-right" color="deep-purple lighten-1" dark type="submit" :disabled="!formValido">
+				{% trans "Sign Up" %}
+			</v-btn>
+		</v-col>
+	</v-row>
+</v-form>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript">
+	var form = {{ form.fields_dict | safe}};
+	var objetosCadastro = {
+		formValido: false,
+		usernameRules: [value => !!value || 'Campo obrigatório',
+		value => {
+			const pattern = /^[a-zA-Z\-0-9@\.\-\_\+]+$/;
+			return pattern.test(value) || 'Usuário inválido, deve conter apenas letras, números e @.-_+'
+		}],
+		emailRules: [value => !!value || 'Campo obrigatório',
+		value => {
+			const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+			return pattern.test(value) || 'Email inválido'
+		}],
+		password1Rules: [value => !!value || 'Campo obrigatório',
+		value => { if (!value) return 'Mín. 8 dígitos'; return value.length >= 8 || 'Mín. 8 dígitos' }],
+		password2Rules: [value => !!value || 'Campo obrigatório',
+		value => { if (!app) return false; return value === app.password1 || 'Senhas devem ser iguais'; }]
+	};
+
+	var metodosCadastro = {
+		getRules(campo) {
+			return this[campo] || [];
+		},
+		validate: function () {
+			// manually call validation
+			this.$refs.form.validate();
+		}
+	};
+
+	data = { ...data, ...objetosCadastro, ...form };
+	methods = { ...methods, ...metodosCadastro };
+
+	var app = gerarApp(data, methods, computed);
+	app.validate();
+</script>
+{% endblock %}

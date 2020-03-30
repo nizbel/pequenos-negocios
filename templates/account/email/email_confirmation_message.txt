@@ -1,0 +1,7 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}
+Olá de {{ current_site.name }}!
+
+Você está recebendo este email porque o usuário {{user_display}} usou este endereço para a criação de uma conta.
+
+Para confirmar que isso está correto, acesse {{ activate_url}}
+{% endautoescape %}

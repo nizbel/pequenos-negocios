@@ -3,6 +3,8 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <title>Apoie Produtores Locais</title>
+
     <link href="https://fonts.googleapis.com/css?family=Merienda+One|Open+Sans&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
@@ -52,8 +54,40 @@ deep-purple lighten-1
         </v-app-bar>
 
         <v-navigation-drawer app v-model="drawer" temporary color="lime lighten-2">
+
             <v-list>
+                {% if request.user.is_authenticated %}
+                <v-list-item>
+                    <v-list-item-content>
+                        <v-list-item-title class="title">
+                            {{ request.user.username }}
+                        </v-list-item-title>
+                    </v-list-item-content>
+                </v-list-item>
+
+                <v-divider></v-divider>
+                {% endif %}
+
                 <v-list-item-group v-model="estadoDrawer">
+                    {% if request.user.is_authenticated %}
+                    <v-list-item link href="{% url 'account_logout' %}?next={{request.path}}">
+                        <v-list-item-action>
+                            <v-icon>mdi-logout</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Sair</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    {% else %}
+                    <v-list-item link href="{% url 'account_login' %}?next={{request.path}}">
+                        <v-list-item-action>
+                            <v-icon>mdi-login</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title>Login</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                    {% endif %}
                     <v-list-item :value="estadoAtual !== estadoAdministrar" @click="irParaPesquisa()">
                         <v-list-item-action>
                             <v-icon>mdi-magnify</v-icon>
@@ -64,7 +98,7 @@ deep-purple lighten-1
                             </v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
-                    {% if request.user.is_superuser %}
+                    {% if request.user.is_authenticated %}
                     <v-list-item :value="estadoAtual === estadoAdministrar" @click="irParaAdministracao()">
                         <v-list-item-action>
                             <v-icon>mdi-account-details</v-icon>
@@ -320,7 +354,7 @@ deep-purple lighten-1
                 {% comment %}
                 Modais de formulário
                 {% endcomment %}
-                {% if request.user.is_superuser %}
+                {% if request.user.is_authenticated %}
                 <v-row class="mx-0" v-if="estadoAtual === estadoAdministrar">
                     <v-col cols="12">
                         <v-sheet color="lime lighten-2" tile>
@@ -711,7 +745,7 @@ deep-purple lighten-1
         const CATEGORIA_COMIDA_MEXICANA = 15;
         const CATEGORIA_OVOS = 16;
 
-        {% if request.user.is_superuser %}
+        {% if request.user.is_authenticated %}
         axios.defaults.xsrfCookieName = 'csrftoken'
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
         {% endif %}
@@ -819,11 +853,9 @@ deep-purple lighten-1
                 },
                 telefoneFormatado: {
                     get: function () {
-                        console.log('get', this.modal.form.telefone, this.formatarTelefone(this.modal.form.telefone));
                         return this.formatarTelefone(this.modal.form.telefone);
                     },
                     set: function (newValue) {
-                        console.log('set', newValue);
                         this.modal.form.telefone = newValue.replace(/\D/g, '');
                     }
                 },
@@ -971,15 +1003,6 @@ deep-purple lighten-1
                             this.negocioSelecionado.produtos = response.data;
                         });
 
-                    // Definir nomes para regiões de entrega
-                    // for (regiao_entrega of this.negocioSelecionado.regioes_entrega) {
-                    //     for (regiao of this.regioesEntrega) {
-                    //         if (regiao_entrega.regiao === regiao.id) {
-                    //             regiao_entrega.nomeRegiao = regiao.nome;
-                    //             break;
-                    //         }
-                    //     }
-                    // }
                     this.prepararInfoNegocioRegioesEntrega(this.negocioSelecionado);
                 },
                 voltarLista() {
@@ -987,13 +1010,13 @@ deep-purple lighten-1
                     this.estadoAtual = this.estadoLista;
                 },
 
-                //{% if request.user.is_superuser %}
+                //{% if request.user.is_authenticated %}
                 // Modal
                 enviarForm(event) {
                     let formData = new FormData(event.target);
-                    for (var pair of formData.entries()) {
-                        console.log(pair[0] + ', ' + pair[1]);
-                    }
+                    // for (var pair of formData.entries()) {
+                    //     console.log(pair[0] + ', ' + pair[1]);
+                    // }
                     // if (2 === 2) {
                     //     return;
                     // }
@@ -1056,6 +1079,7 @@ deep-purple lighten-1
                     }
                 },
                 mostrarModalForm(tipo_objeto, objeto, apagar) {
+                    this.modal.method = (objeto === null ? 'POST' : (apagar ? 'DELETE' : 'PUT'));
                     switch (tipo_objeto) {
                         case 'contato':
                             this.modal.headline = (apagar ? 'Deseja realmente excluir o seguinte Contato?' : 'Contato');
@@ -1080,14 +1104,14 @@ deep-purple lighten-1
                             this.modal.estadoAtual = this.modal.estadoAlteracaoRegiaoEntrega;
                             this.modal.url = (objeto == null ? '/api/negocios/regioes-entrega/' : objeto.url);
                             this.modal.elementoAlterado = (objeto && !apagar ? objeto : this.meuNegocio.regioes_entrega);
-                            this.modal.form.taxa_entrega = 0;
+
+                            if (this.modal.method === 'POST') this.modal.form.taxa_entrega = this.meuNegocio.taxa_padrao_entrega;
                             break;
                     }
 
                     if (objeto !== null) {
                         this.modal.form = { ...objeto };
                     }
-                    this.modal.method = (objeto === null ? 'POST' : (apagar ? 'DELETE' : 'PUT'));
                     this.modal.show = true;
                 },
                 fecharModalForm() {

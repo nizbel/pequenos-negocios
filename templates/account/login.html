@@ -1,0 +1,80 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+
+<h1>{% trans "Sign In" %}</h1>
+
+{% get_providers as socialaccount_providers %}
+
+{% if socialaccount_providers %}
+<p>{% blocktrans with site.name as site_name %}Please sign in with one
+  of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
+  for a {{ site_name }} account and sign in below:{% endblocktrans %}</p>
+
+<div class="socialaccount_ballot">
+
+  <ul class="socialaccount_providers">
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+  </ul>
+
+  <div class="login-or">{% trans 'or' %}</div>
+
+</div>
+
+{% include "socialaccount/snippets/login_extra.html" %}
+
+{% else %}
+<p>Se ainda não tem uma conta, por favor
+  <a href="{{ signup_url }}">cadastre-se</a> primeiro.</p>
+{% endif %}
+
+<v-form method="post" v-model="formValido">
+  {% csrf_token %}
+  <v-text-field dense id="id_login" label="Usuário/email" hint="Insira usuário ou email" name="login" v-model="login"
+    :error-messages="{{ form.username.field.erros|default:"[]" }}" error-count="10" prepend-icon="mdi-account"
+    :rules="[rules.required]">
+  </v-text-field>
+
+  <v-text-field dense id="id_password" label="Senha" name="password" v-model="password"
+    :error-messages="{{ form.password.field.erros|default:"[]" }}" error-count="10" prepend-icon="mdi-lock"
+    type="password" :rules="[rules.required, rules.counter]">
+  </v-text-field>
+  {% for error in form.non_field_errors %}
+  <v-alert dense outlined type="error">
+    {{ error }}
+  </v-alert>
+  {% endfor %}
+
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+  {% endif %}
+  <a class="button secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+  <v-row>
+    <v-col cols="12">
+      <v-btn class="float-right" color="deep-purple lighten-1" dark type="submit" :disabled="!formValido">
+        {% trans "Sign In" %}
+      </v-btn>
+    </v-col>
+  </v-row>
+</v-form>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript">
+  var objetosLogin = {
+    login: '{{ form.login.value|default:"" }}', password: '{{ form.password.value|default:"" }}',
+    formValido: false,
+    rules: {
+      required: value => !!value || 'Campo obrigatório',
+      counter: value => value.length >= 8 || 'Mín. 8 dígitos',
+    }
+  };
+  data = { ...data, ...objetosLogin };
+</script>
+{% endblock %}

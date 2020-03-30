@@ -1,0 +1,62 @@
+{% for error in form.non_field_errors %}
+<v-alert dense outlined type="error">
+    {{ error }}
+</v-alert>
+{% endfor %}
+<v-row>
+    {% for field in form.visible_fields %}
+    <v-col cols="12" sm="{{ tamanho_colunas|default:4 }}">
+        {% if 'form-text' in field.field.classes %}
+        <v-text-field outlined id="{{ field.id_for_label }}" label="{{ field.label }}" hint="{{ field.help_text }}"
+            name="{{ field.name }}" :rules="getRules('{{ field.name }}Rules')" v-model="{{ field.name }}"
+            :error-messages="{{ field.name }}Errors" error-count="10" @input="{{ field.name }}Errors = ''" clearable>
+        </v-text-field>
+        {% endif %}
+        {% if 'form-data' in field.field.classes %}
+        <input type="hidden" name="{{ field.name }}" v-model="{{ field.name }}" />
+        <v-menu transition="scale-transition" offset-y min-width="300px">
+            <template v-slot:activator="{ on }">
+                <v-text-field id="{{ field.id_for_label }}" v-model="{{ field.name }}Formatada" outlined
+                    label="{{ field.label }}" hint="{{ field.help_text|safe }}" readonly v-on="on"
+                    :error-messages="{{ field.name }}Errors" error-count="10"
+                    :rules="getRules('{{ field.name }}Rules')">
+                </v-text-field>
+            </template>
+            <v-date-picker v-model="{{ field.name }}"></v-date-picker>
+        </v-menu>
+        {% endif %}
+        {% if 'form-select' in field.field.classes %}
+        <v-autocomplete outlined label="{{ field.label }}" id="{{ field.id_for_label }}"
+            :items="{{ field.name }}Choices" item-text="nome" item-value="id" v-model="{{ field.name }}"
+            :rules="getRules('{{ field.name }}Rules')" :error-messages="{{ field.name }}Errors" error-count="10"
+            @input="{{ field.name }}Errors = ''">
+        </v-autocomplete>
+        <input type="hidden" name="{{ field.name }}" v-model="{{ field.name }}" />
+        {% endif %}
+        {% if 'form-coordinates' in field.field.classes %}
+        <input type="hidden" name="latitude" v-model="latitude" />
+        <input type="hidden" name="longitude" v-model="longitude" />
+        <v-menu transition="false" offset-y min-width="300px" :close-on-content-click="false">
+            <template v-slot:activator="{ on }">
+                <v-text-field id="{{ field.id_for_label }}" outlined label="{{ field.label }}"
+                    hint="{{ field.help_text|safe }}" v-model="{{ field.name }}" v-on="on" @click="openMap"
+                    :error-messages="{{ field.name }}Errors" error-count="10" name="{{ field.name }}"
+                    :rules="getRules('{{ field.name }}Rules')">
+                </v-text-field>
+            </template>
+            <v-row>
+                <v-col cols="12">
+                    <div id="mapa-id" style="height: 300px"></div>
+                </v-col>
+            </v-row>
+        </v-menu>
+        {% endif %}
+        {% if 'form-boolean' in field.field.classes %}
+        <input type="hidden" name="{{ field.name }}" v-model="{{ field.name }}" />
+        <v-switch center outlined id="{{ field.id_for_label }}" v-model="{{ field.name }}" class="mx-2"
+            label="{{ field.label }}">
+        </v-switch>
+        {% endif %}
+    </v-col>
+    {% endfor %}
+</v-row>
