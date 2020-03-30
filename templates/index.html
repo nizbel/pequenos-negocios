@@ -1006,9 +1006,9 @@ deep-purple lighten-1
                                 app.loading.pop();
                                 this.modal.elementoAlterado.push(response.data);
 
-                                if (this.modal.estadoAtual === ESTADO_ALTERACAO_REGIAO_ENTREGA) {
-                                    this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
-                                }
+                                // Atualizar
+                                this.prepararInfoNegocio(this.meuNegocio);
+                                this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
@@ -1023,6 +1023,10 @@ deep-purple lighten-1
                             .then(response => {
                                 app.loading.pop();
                                 app.modal.elementoAlterado = Object.assign(app.modal.elementoAlterado, response.data);
+
+                                // Atualizar
+                                this.prepararInfoNegocio(this.meuNegocio);
+                                this.prepararInfoNegocioRegioesEntrega(this.meuNegocio);
                                 app.fecharModalForm();
                             })
                             .catch(function (error) {
