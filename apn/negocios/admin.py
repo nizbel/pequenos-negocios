@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 
-from apn.negocios.models import InfoPerfilUsuario, NegocioUsuario, Produto
+from apn.negocios.models import InfoPerfilUsuario, Negocio, \
+    NegocioUsuario, Produto
 
 # Define an inline admin descriptor for InfoPerfilUsuario model
 # which acts a bit like a singleton
@@ -28,8 +29,8 @@ admin.site.register(InfoPerfilUsuario)
 
 
 class NegocioAdmin(admin.ModelAdmin):
-    list_display = ('nome',
-                    'valor_minimo', 'formas_pagamento', 'endereco', 'taxa_padrao_entrega', 'instagram')
+    list_display = ('nome', 'valor_minimo', 'formas_pagamento',
+                    'endereco', 'taxa_padrao_entrega', 'instagram')
     search_fields = ['user__username', 'url']
 
     def has_add_permission(self, request, obj=None):
