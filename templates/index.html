@@ -128,9 +128,14 @@ deep-purple lighten-1
                                 <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
                                 <p class="mb-0">Dessa forma podemos padronizar as listas que tem circulado
                                     pelas redes sociais.</p>
+                                <p class="mb-0">Caso você seja o dono de algum dos negócios já cadastrados,
+                                    crie sua conta e envie um email para
+                                    <a href="javascript:;">apoieprodutoreslocais@gmail.com</a>,
+                                    para vincular as informações a sua conta.
+                                </p>
                             </v-sheet>
 
-                            <v-col cols="12" class="hidden-sm-and-down">
+                            <v-col cols=" 12" class="hidden-sm-and-down">
                                 <v-divider></v-divider>
                             </v-col>
 
@@ -207,7 +212,8 @@ deep-purple lighten-1
                                                             <v-list-item-title>
                                                                 <span>[[ negocio.nome ]]</span>
                                                                 <span v-if="negocio.instagram.length > 0">
-                                                                    <a v-on:click.stop :href="negocio.instagram">
+                                                                    <a v-on:click.stop
+                                                                        :href="formatarUrlInstagram(negocio.instagram)">
                                                                         <v-icon>mdi-instagram</v-icon>
                                                                     </a>
                                                                 </span>
@@ -261,7 +267,7 @@ deep-purple lighten-1
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ negocioSelecionado.nome ]]
                                             <span v-if="negocioSelecionado.instagram.length > 0">
-                                                <a :href="negocioSelecionado.instagram">
+                                                <a :href="formatarUrlInstagram(negocioSelecionado.instagram)">
                                                     <v-icon large>mdi-instagram</v-icon>
                                                 </a>
                                             </span>
@@ -369,7 +375,7 @@ deep-purple lighten-1
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ meuNegocio.nome ]]
                                             <span v-if="meuNegocio.instagram.length > 0">
-                                                <a :href="meuNegocio.instagram">
+                                                <a :href="formatarUrlInstagram(meuNegocio.instagram)">
                                                     <v-icon large>mdi-instagram</v-icon>
                                                 </a>
                                             </span>
@@ -721,13 +727,7 @@ deep-purple lighten-1
         const ESTADO_DETALHE = 2;
         const ESTADO_ADMINISTRAR = 3;
 
-        // Modal
-        const ESTADO_FECHADO = 0;
-        const ESTADO_ALTERACAO_NEGOCIO = 1;
-        const ESTADO_ALTERACAO_CONTATO = 2;
-        const ESTADO_ALTERACAO_REGIAO_ENTREGA = 3;
-        const ESTADO_ALTERACAO_PRODUTO = 4;
-
+        // Categorias
         const CATEGORIA_CONGELADOS = 1;
         const CATEGORIA_SALGADOS = 2;
         const CATEGORIA_DOCES = 3;
@@ -746,6 +746,13 @@ deep-purple lighten-1
         const CATEGORIA_OVOS = 16;
 
         {% if request.user.is_authenticated %}
+        // Modal
+        const ESTADO_FECHADO = 0;
+        const ESTADO_ALTERACAO_NEGOCIO = 1;
+        const ESTADO_ALTERACAO_CONTATO = 2;
+        const ESTADO_ALTERACAO_REGIAO_ENTREGA = 3;
+        const ESTADO_ALTERACAO_PRODUTO = 4;
+
         axios.defaults.xsrfCookieName = 'csrftoken'
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
         {% endif %}
@@ -960,12 +967,14 @@ deep-purple lighten-1
                             return null;
                     }
                 },
-                prepararInfoNegocio(negocio) {
+                formatarUrlInstagram(urlInstagram) {
                     // Preparar link instagram
-                    if (negocio.instagram.length > 0) {
-                        negocio.instagram = 'https://instagram.com/' + negocio.instagram;
+                    if (urlInstagram.length > 0) {
+                        return 'https://instagram.com/' + urlInstagram;
                     }
-
+                    return '';
+                },
+                prepararInfoNegocio(negocio) {
                     for (contato of negocio.contatos) {
                         if (contato.nome.length > 0) {
                             contato.nome_telefone = contato.nome + ' ' + this.formatarTelefone(contato.telefone);
