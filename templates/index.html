@@ -727,6 +727,13 @@ deep-purple lighten-1
         const ESTADO_DETALHE = 2;
         const ESTADO_ADMINISTRAR = 3;
 
+        // Modal
+        const ESTADO_FECHADO = 0;
+        const ESTADO_ALTERACAO_NEGOCIO = 1;
+        const ESTADO_ALTERACAO_CONTATO = 2;
+        const ESTADO_ALTERACAO_REGIAO_ENTREGA = 3;
+        const ESTADO_ALTERACAO_PRODUTO = 4;
+
         // Categorias
         const CATEGORIA_CONGELADOS = 1;
         const CATEGORIA_SALGADOS = 2;
@@ -746,13 +753,6 @@ deep-purple lighten-1
         const CATEGORIA_OVOS = 16;
 
         {% if request.user.is_authenticated %}
-        // Modal
-        const ESTADO_FECHADO = 0;
-        const ESTADO_ALTERACAO_NEGOCIO = 1;
-        const ESTADO_ALTERACAO_CONTATO = 2;
-        const ESTADO_ALTERACAO_REGIAO_ENTREGA = 3;
-        const ESTADO_ALTERACAO_PRODUTO = 4;
-
         axios.defaults.xsrfCookieName = 'csrftoken'
         axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
         {% endif %}
