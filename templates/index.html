@@ -120,10 +120,36 @@ deep-purple lighten-1
                         </v-progress-circular>
                     </v-layout>
                 </v-overlay>
+                <v-row class="mx-0" v-if="estadoAtual === estadoLista">
+                    <v-col offset="1" cols="10" class="text-center">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <span class="mb-0">O momento que estamos passando no Brasil é difícil para
+                                    todos. Os
+                                    pequenos negócios
+                                    sofrerão ainda mais do que as grandes indústrias. Por isso, cada um tem
+                                    feito o
+                                    que
+                                    pode
+                                    para se manter.</span>
+                                <span class="mb-0">Este site foi criado com o intuito de listar e centralizar as
+                                    informações de serviços e pequenos negócios do DF que estão funcionando com
+                                    delivery
+                                    ou take out
+                                    (passe e
+                                    pegue).</span>
+                                <span class="mb-0">Para cadastrar seu negócio/produto, crie uma conta para
+                                    adicionar
+                                    as
+                                    informações!</span>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-col>
+                </v-row>
                 <v-row class="mx-0">
                     <v-col cols="12" md="6" v-if="estadoAtual === estadoLista">
                         <v-sheet color="lime lighten-2" tile>
-                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                            <!-- <v-sheet color="lime lighten-2" class="pa-3" tile>
                                 <h2>Sobre</h2>
                                 <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
                                 <p class="mb-0">Dessa forma podemos padronizar as listas que tem circulado
@@ -137,14 +163,15 @@ deep-purple lighten-1
 
                             <v-col cols=" 12" class="hidden-sm-and-down">
                                 <v-divider></v-divider>
-                            </v-col>
+                            </v-col> -->
 
                             <v-sheet class="pa-3 hidden-sm-and-down" color="lime lighten-2" tile>
                                 <h2>Filtros</h2>
                                 <v-row>
                                     <v-col md="4">
                                         <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
-                                            item-value="id" label="Categoria" outlined></v-select>
+                                            item-value="id" label="Categoria" outlined>
+                                        </v-select>
                                     </v-col>
                                     <v-col md="4">
                                         <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
@@ -176,7 +203,8 @@ deep-purple lighten-1
                                 <v-row v-if="showFiltros">
                                     <v-col cols="12">
                                         <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
-                                            item-value="id" label="Categoria" outlined></v-select>
+                                            item-value="id" label="Categoria" outlined>
+                                        </v-select>
                                     </v-col>
                                     <v-col cols="12">
                                         <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
@@ -204,7 +232,8 @@ deep-purple lighten-1
                                 <v-card>
                                     <v-list class="py-0" color="lime lighten-5" two-line max-height="600"
                                         style="overflow-y: scroll;">
-                                        <v-list-item-group multiple active-class="deep-purple--text text--lighten-1">
+                                        <v-list-item-group v-if="negociosFiltrados.length !== 0"
+                                            active-class="deep-purple--text text--lighten-1">
                                             <template v-for="(negocio, index) in negociosFiltrados">
                                                 <v-list-item @click="selecionarNegocio(negocio)">
                                                     <template v-slot:default="{ active, toggle }">
@@ -212,7 +241,7 @@ deep-purple lighten-1
                                                             <v-list-item-title>
                                                                 <span>[[ negocio.nome ]]</span>
                                                                 <span v-if="negocio.instagram.length > 0">
-                                                                    <a v-on:click.stop
+                                                                    <a v-on:click.stop target="_blank"
                                                                         :href="formatarUrlInstagram(negocio.instagram)">
                                                                         <v-icon>mdi-instagram</v-icon>
                                                                     </a>
@@ -224,7 +253,9 @@ deep-purple lighten-1
                                                                     v-for="(categoria, index) in negocio.categorias">
                                                                     <template v-slot:activator="{ on }">
                                                                         <v-icon v-on:click.stop v-on="on">
-                                                                            [[ buscarCategoriaIcone(categoria.id) ]]
+                                                                            [[
+                                                                            buscarCategoriaIcone(categoria.id)
+                                                                            ]]
                                                                         </v-icon>
                                                                     </template>
                                                                     <span>[[ buscarCategoriaNome(categoria.id)
@@ -241,7 +272,8 @@ deep-purple lighten-1
                                                                     <span>
                                                                         <span>[[ contato.nome_telefone ]]
                                                                             <a v-on:click.stop v-if="contato.whatsapp"
-                                                                                :href="contato.whatsapp">
+                                                                                :href="contato.whatsapp"
+                                                                                target="_blank">
                                                                                 <v-icon>mdi-whatsapp</v-icon>
                                                                             </a></span>
                                                                     </span>
@@ -254,7 +286,18 @@ deep-purple lighten-1
                                                 </v-divider>
                                             </template>
                                         </v-list-item-group>
+
+                                        <v-list-item v-if="negociosFiltrados.length === 0">
+                                            <v-list-item-content>
+                                                <v-list-item-subtitle>
+                                                    Não foram encontrados resultados para os filtros
+                                                    selecionados
+                                                </v-list-item-subtitle>
+                                            </v-list-item-content>
+                                        </v-list-item>
                                     </v-list>
+                                    <span>Conhece algum negócio que poderia estar listado aqui? Divulgue o site
+                                        e peça para se cadastrarem!</span>
                                 </v-card>
                             </v-sheet>
                         </v-sheet>
@@ -267,7 +310,8 @@ deep-purple lighten-1
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ negocioSelecionado.nome ]]
                                             <span v-if="negocioSelecionado.instagram.length > 0">
-                                                <a :href="formatarUrlInstagram(negocioSelecionado.instagram)">
+                                                <a :href="formatarUrlInstagram(negocioSelecionado.instagram)"
+                                                    target="_blank">
                                                     <v-icon large>mdi-instagram</v-icon>
                                                 </a>
                                             </span>
@@ -282,7 +326,7 @@ deep-purple lighten-1
                                         <v-col cols="12" class="pa-0"
                                             v-for="(contato, indexContato) in negocioSelecionado.contatos">
                                             <span>[[ contato.nome_telefone ]]
-                                                <a v-if="contato.whatsapp" :href="contato.whatsapp">
+                                                <a v-if="contato.whatsapp" :href="contato.whatsapp" target="_blank">
                                                     <v-icon>mdi-whatsapp</v-icon>
                                                 </a>
                                             </span>
@@ -335,7 +379,8 @@ deep-purple lighten-1
                                             <v-row>
                                                 <v-col cols="8" class="py-0">
                                                     <span>
-                                                        <v-icon>[[ buscarCategoriaIcone(produto.categoria) ]]</v-icon>
+                                                        <v-icon>[[ buscarCategoriaIcone(produto.categoria) ]]
+                                                        </v-icon>
                                                         [[ produto.nome ]]
                                                     </span>
                                                 </v-col>
@@ -375,7 +420,7 @@ deep-purple lighten-1
                                     <v-col cols="12" class="py-0">
                                         <h2>[[ meuNegocio.nome ]]
                                             <span v-if="meuNegocio.instagram.length > 0">
-                                                <a :href="formatarUrlInstagram(meuNegocio.instagram)">
+                                                <a :href="formatarUrlInstagram(meuNegocio.instagram)" target="_blank">
                                                     <v-icon large>mdi-instagram</v-icon>
                                                 </a>
                                             </span>
@@ -401,7 +446,8 @@ deep-purple lighten-1
                                             <v-menu open-on-click bottom offset-y>
                                                 <template v-slot:activator="{ on }">
                                                     <span><a v-on="on">[[ contato.nome_telefone ]]</a>
-                                                        <a v-if="contato.whatsapp" :href="contato.whatsapp">
+                                                        <a v-if="contato.whatsapp" :href="contato.whatsapp"
+                                                            target="_blank">
                                                             <v-icon>mdi-whatsapp</v-icon>
                                                         </a>
                                                     </span>
@@ -502,7 +548,8 @@ deep-purple lighten-1
                                                     <v-row>
                                                         <v-col cols="8" class="py-0">
                                                             <span><a v-on="on">
-                                                                    <v-icon>[[ buscarCategoriaIcone(produto.categoria)
+                                                                    <v-icon>[[
+                                                                        buscarCategoriaIcone(produto.categoria)
                                                                         ]]
                                                                     </v-icon>
                                                                     [[ produto.nome ]]
