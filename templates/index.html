@@ -47,7 +47,7 @@ deep-purple lighten-1
 {% endcomment %}
 
 <body>
-    <v-app id="app" style="background-color: #F9FBE7;">
+    <v-app ref="app" id="app" style="background-color: #F9FBE7; display: none;">
         <v-app-bar app color="lime darken-3" dark elevate-on-scroll>
             <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
             <v-toolbar-title>Apoie Produtores Locais</v-toolbar-title>
@@ -112,7 +112,7 @@ deep-purple lighten-1
             </v-list>
         </v-navigation-drawer>
 
-        <v-content>
+        <v-content class="mb-5">
             <v-container fluid>
                 <v-overlay :value="loading.length > 0" style="z-index: 3000">
                     <v-layout row justify-center align-center>
@@ -148,46 +148,6 @@ deep-purple lighten-1
                     </v-col>
                 </v-row>
                 <v-row class="mx-0">
-                    <!-- <v-col cols="12" md="6" v-if="estadoAtual === estadoLista">
-                        <v-sheet color="lime lighten-2" tile>
-                            <v-sheet color="lime lighten-2" class="pa-3" tile>
-                                <h2>Sobre</h2>
-                                <p>A ideia dessa página é centralizar as informações de pequenos produtores no DF.</p>
-                                <p class="mb-0">Dessa forma podemos padronizar as listas que tem circulado
-                                    pelas redes sociais.</p>
-                                <p class="mb-0">Caso você seja o dono de algum dos negócios já cadastrados,
-                                    crie sua conta e envie um email para
-                                    <a href="javascript:;">apoieprodutoreslocais@gmail.com</a>,
-                                    para vincular as informações a sua conta.
-                                </p>
-                            </v-sheet>
-
-                            <v-col cols=" 12" class="hidden-sm-and-down">
-                                <v-divider></v-divider>
-                            </v-col>
-
-                            <v-sheet class="pa-3 hidden-sm-and-down" color="lime lighten-2" tile>
-                                <h2>Filtros</h2>
-                                <v-row>
-                                    <v-col md="4">
-                                        <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
-                                            item-value="id" label="Categoria" outlined>
-                                        </v-select>
-                                    </v-col>
-                                    <v-col md="4">
-                                        <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
-                                            outlined>
-                                        </v-text-field>
-                                    </v-col>
-                                    <v-col md="4">
-                                        <v-select v-model="pesquisa.regiaoEntrega" :items="regioesEntrega"
-                                            item-text="nome" item-value="id" label="Região de entrega" outlined>
-                                        </v-select>
-                                    </v-col>
-                                </v-row>
-                            </v-sheet>
-                    </v-col> -->
-
                     <v-col cols="12" class="hidden-md-and-up" v-if="estadoAtual === estadoLista">
                         <v-divider></v-divider>
                     </v-col>
@@ -304,6 +264,38 @@ deep-purple lighten-1
                             <v-sheet color="lime lighten-2" class="pa-3 text-center" tile>
                                 <h4>Conhece algum negócio que poderia estar listado aqui? Divulgue o site
                                     e peça para se cadastrarem!</h4>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-col>
+
+                    <v-col cols="12" offset-md="2" md="4" v-if="estadoAtual === estadoLista">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <h2>Como ajudar?</h2>
+                                <p class="mb-0">A ideia dessa página é centralizar as informações de pequenos produtores
+                                    no DF.</p>
+                                <p class="mb-0">Ajude divulgando e levando a informação a pequenos produtores.</p>
+                                <p class="mb-0">Caso você seja o dono de algum dos negócios já cadastrados,
+                                    crie sua conta e entre em contato para vincular as informações a sua conta.
+                                </p>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-col>
+
+                    <v-col cols="12" md="4" v-if="estadoAtual === estadoLista">
+                        <v-sheet color="lime lighten-2" tile>
+                            <v-sheet color="lime lighten-2" class="pa-3" tile>
+                                <h2>Contato</h2>
+                                <h4>
+                                    <a href="https://instagram.com/apoieprodutoreslocais">
+                                        <v-icon large>mdi-instagram</v-icon>@apoieprodutoreslocais
+                                    </a>
+                                </h4>
+                                <h4>
+                                    <a href="mailto:apoieprodutoreslocais@gmail.com">
+                                        <v-icon large>mdi-email</v-icon>Email
+                                    </a>
+                                </h4>
                             </v-sheet>
                         </v-sheet>
                     </v-col>
@@ -818,7 +810,7 @@ deep-purple lighten-1
                 {% endif %}
             </v-container>
         </v-content>
-        <v-footer app color=" lime lighten-2" absolute class="py-0">
+        <v-footer app color="lime lighten-2" absolute class="py-0">
             <v-col class="text-center py-1" cols="12">
                 <span>Feito por <a href="https://twitter.com/gui_niz">@gui_niz</a></span>
             </v-col>
@@ -1301,8 +1293,9 @@ deep-purple lighten-1
             },
 
             mounted() {
+                document.getElementById("app").style.display = 'flex';
                 axios
-                    .get('/api/negocios/')
+                    .get(URL_NEGOCIO)
                     .then(response => {
                         app.loading.pop();
                         this.negocios = response.data;
