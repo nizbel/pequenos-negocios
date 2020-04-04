@@ -41,10 +41,10 @@ class Negocio(models.Model):
         return NegocioUsuario.objects.filter(negocio=self) \
             .values_list('usuario', flat=True)
 
-    @property
-    def categorias(self):
-        return Produto.objects.filter(negocio=self) \
-            .values('categoria').distinct()
+    # @property
+    # def categorias(self):
+    #     return Produto.objects.filter(negocio=self) \
+    #         .values('categoria').distinct()
 
 
 class Contato(models.Model):
@@ -108,3 +108,12 @@ class NegocioRegiaoEntrega(models.Model):
 class NegocioHorarioEntrega(models.Model):
     descricao = models.CharField('Descrição', max_length=100)
     negocio = models.ForeignKey('Negocio', on_delete=models.CASCADE)
+
+
+class NegocioCategoria(models.Model):
+    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
+    negocio = models.ForeignKey(
+        'Negocio', on_delete=models.CASCADE, related_name="categorias")
+
+    class Meta:
+        unique_together = ('categoria', 'negocio')

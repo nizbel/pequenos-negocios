@@ -22,6 +22,7 @@ from apn.negocios import views
 router = routers.DefaultRouter()
 router.register(r'categorias', views.CategoriaViewSet)
 router.register(r'contatos', views.ContatoViewSet)
+router.register(r'negocios/categorias', views.NegocioCategoriaViewSet)
 router.register(r'negocios/regioes-entrega', views.NegocioRegiaoEntregaViewSet)
 router.register(r'negocios/(?P<negocio_id>\d+)/contatos',
                 views.ContatoViewSet)

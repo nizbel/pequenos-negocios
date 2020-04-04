@@ -1,6 +1,7 @@
 from apn.negocios.serializers import UserSerializer, \
     NegocioSerializer, ContatoSerializer, CategoriaSerializer, \
-    ProdutoSerializer, RegiaoEntregaSerializer, NegocioRegiaoEntregaSerializer
+    ProdutoSerializer, RegiaoEntregaSerializer,  \
+    NegocioRegiaoEntregaSerializer, NegocioCategoriaSerializer
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.shortcuts import render
@@ -9,7 +10,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from apn import settings
 from apn.negocios.models import Negocio, NegocioUsuario, Contato, \
-    Categoria, Produto, RegiaoEntrega, NegocioRegiaoEntrega
+    Categoria, Produto, RegiaoEntrega, NegocioRegiaoEntrega, \
+    NegocioCategoria
 from apn.negocios.permissions import ResponsavelOuReadOnly, ProprioUsuario, \
     ResponsavelNegocioOuReadOnly, AdminOuReadOnly
 
@@ -51,39 +53,6 @@ class NegocioViewSet(viewsets.ModelViewSet):
         except:
             raise
         return result
-
-    def list(self, request):
-        result = super().list(request)
-
-        # Percorrer todos os ids para adicionar categorias
-        ids = []
-        for negocio_data in result.data:
-            ids.append(negocio_data['id'])
-
-        # Listar produtos para trazer pares (categoria, negócio)
-        categorias_negocios = Produto.objects.filter(
-            negocio__id__in=ids).values('categoria', 'negocio').order_by('negocio').distinct()
-
-        for negocio_data in result.data:
-            negocio_data['categorias'] = []
-            for categoria_negocio in categorias_negocios:
-                if negocio_data['id'] == categoria_negocio['negocio']:
-                    negocio_data['categorias'].append(
-                        {'id': categoria_negocio['categoria']})
-
-        return result
-
-    @action(detail=True)
-    def categorias(self, request, *args, **kwargs):
-        negocio_id = self.kwargs.get('pk')
-        if not negocio_id:
-            return Response([])
-
-        negocio = Negocio.objects.get(id=negocio_id)
-        categorias = Categoria.objects.filter(id__in=negocio.categorias)
-        serializer = CategoriaSerializer(
-            categorias, many=True, context={'request': request})
-        return Response(serializer.data)
 
     @action(detail=False)
     def meus(self, request, *args, **kwargs):
@@ -182,5 +151,16 @@ class NegocioRegiaoEntregaViewSet(viewsets.ModelViewSet):
     queryset = NegocioRegiaoEntrega.objects.all().order_by(
         'negocio__nome', 'regiao__nome')
     serializer_class = NegocioRegiaoEntregaSerializer
+    permission_classes = [
+        permissions.IsAuthenticatedOrReadOnly, ResponsavelNegocioOuReadOnly]
+
+
+class NegocioCategoriaViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint para NegocioCategoria.
+    """
+    queryset = NegocioCategoria.objects.all().order_by(
+        'negocio__nome', 'categoria__nome')
+    serializer_class = NegocioCategoriaSerializer
     permission_classes = [
         permissions.IsAuthenticatedOrReadOnly, ResponsavelNegocioOuReadOnly]
