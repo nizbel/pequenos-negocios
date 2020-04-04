@@ -162,17 +162,17 @@ deep-purple lighten-1
                                 </v-btn>
                                 <h2>Filtros</h2>
                                 <v-row v-if="showFiltros">
-                                    <v-col cols="12">
+                                    <v-col cols="12" md="4">
                                         <v-select v-model="pesquisa.categoria" :items="categorias" item-text="nome"
                                             item-value="id" label="Categoria" outlined>
                                         </v-select>
                                     </v-col>
-                                    <v-col cols="12">
+                                    <v-col cols="12" md="4">
                                         <v-text-field v-model="pesquisa.nome" label="Nome" placeholder="Digite um nome"
                                             outlined>
                                         </v-text-field>
                                     </v-col>
-                                    <v-col cols="12">
+                                    <v-col cols="12" md="4">
                                         <v-select v-model="pesquisa.regiaoEntrega" :items="regioesEntrega"
                                             item-text="nome" item-value="id" label="Região de entrega" outlined>
                                         </v-select>
