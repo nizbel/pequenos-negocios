@@ -45,6 +45,12 @@ class NegocioAdmin(admin.ModelAdmin):
 
 admin.site.register(Negocio, NegocioAdmin)
 
-admin.site.register(NegocioUsuario)
+
+class NegocioUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('negocio', 'usuario')
+    search_fields = ['usuario__username', 'negocio__nome']
+
+
+admin.site.register(NegocioUsuario, NegocioUsuarioAdmin)
 
 admin.site.register(Produto)
